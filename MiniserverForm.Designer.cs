@@ -1,4 +1,7 @@
-﻿namespace LoxStatEdit
+﻿using System.Drawing;
+using System.Windows.Forms;
+
+namespace LoxStatEdit
 {
     partial class MiniserverForm
     {
@@ -28,16 +31,20 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.Windows.Forms.Label urlLabel;
             System.Windows.Forms.Button refreshFolderButton;
             System.Windows.Forms.Button refreshMsButton;
             System.Windows.Forms.Label folderLabel;
             System.Windows.Forms.Button downloadButton;
+            System.Windows.Forms.Label aboutLabel;
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MiniserverForm));
             this._urlTextBox = new System.Windows.Forms.TextBox();
             this._folderTextBox = new System.Windows.Forms.TextBox();
             this._dataGridView = new System.Windows.Forms.DataGridView();
+            this.githubLabel = new System.Windows.Forms.LinkLabel();
+            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this._nameCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this._yearMonthCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this._statusCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -49,83 +56,91 @@
             refreshMsButton = new System.Windows.Forms.Button();
             folderLabel = new System.Windows.Forms.Label();
             downloadButton = new System.Windows.Forms.Button();
+            aboutLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this._dataGridView)).BeginInit();
             this.SuspendLayout();
             // 
             // urlLabel
             // 
-            urlLabel.Location = new System.Drawing.Point(18, 26);
-            urlLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            urlLabel.Location = new System.Drawing.Point(12, 17);
             urlLabel.Name = "urlLabel";
-            urlLabel.Size = new System.Drawing.Size(123, 28);
+            urlLabel.Size = new System.Drawing.Size(82, 18);
             urlLabel.TabIndex = 0;
             urlLabel.Text = "Miniserver:";
             // 
             // refreshFolderButton
             // 
             refreshFolderButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            refreshFolderButton.Location = new System.Drawing.Point(1127, 58);
-            refreshFolderButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            refreshFolderButton.Location = new System.Drawing.Point(632, 38);
             refreshFolderButton.Name = "refreshFolderButton";
-            refreshFolderButton.Size = new System.Drawing.Size(112, 35);
+            refreshFolderButton.Size = new System.Drawing.Size(75, 23);
             refreshFolderButton.TabIndex = 5;
-            refreshFolderButton.Text = "Refresh FS";
+            refreshFolderButton.Text = "Refresh &FS";
+            this.toolTip.SetToolTip(refreshFolderButton, "ALT + F");
             refreshFolderButton.UseVisualStyleBackColor = true;
             refreshFolderButton.Click += new System.EventHandler(this.RefreshFolderButton_Click);
             // 
             // refreshMsButton
             // 
             refreshMsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            refreshMsButton.Location = new System.Drawing.Point(1127, 18);
-            refreshMsButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            refreshMsButton.Location = new System.Drawing.Point(632, 12);
             refreshMsButton.Name = "refreshMsButton";
-            refreshMsButton.Size = new System.Drawing.Size(112, 35);
+            refreshMsButton.Size = new System.Drawing.Size(75, 23);
             refreshMsButton.TabIndex = 2;
-            refreshMsButton.Text = "Refresh MS";
+            refreshMsButton.Text = "Refresh &MS";
+            this.toolTip.SetToolTip(refreshMsButton, "ALT + M");
             refreshMsButton.UseVisualStyleBackColor = true;
             refreshMsButton.Click += new System.EventHandler(this.RefreshMsButton_Click);
             // 
             // folderLabel
             // 
-            folderLabel.Location = new System.Drawing.Point(18, 66);
-            folderLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            folderLabel.Location = new System.Drawing.Point(12, 43);
             folderLabel.Name = "folderLabel";
-            folderLabel.Size = new System.Drawing.Size(123, 28);
+            folderLabel.Size = new System.Drawing.Size(82, 18);
             folderLabel.TabIndex = 3;
             folderLabel.Text = "Working Folder:";
             // 
             // downloadButton
             // 
             downloadButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            downloadButton.Location = new System.Drawing.Point(1073, 1092);
-            downloadButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            downloadButton.Location = new System.Drawing.Point(596, 527);
             downloadButton.Name = "downloadButton";
-            downloadButton.Size = new System.Drawing.Size(166, 35);
+            downloadButton.Size = new System.Drawing.Size(111, 23);
             downloadButton.TabIndex = 7;
-            downloadButton.Text = "Download selected";
+            downloadButton.Text = "&Download selected";
+            this.toolTip.SetToolTip(downloadButton, "ALT + D");
             downloadButton.UseVisualStyleBackColor = true;
             downloadButton.Click += new System.EventHandler(this.DownloadButton_Click);
+            // 
+            // aboutLabel
+            // 
+            aboutLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            aboutLabel.Location = new System.Drawing.Point(12, 532);
+            aboutLabel.Name = "aboutLabel";
+            aboutLabel.Size = new System.Drawing.Size(171, 18);
+            aboutLabel.TabIndex = 8;
+            aboutLabel.Text = "LoxStatEdit v1.0.1.0 (2023.09.24)";
             // 
             // _urlTextBox
             // 
             this._urlTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this._urlTextBox.Location = new System.Drawing.Point(150, 22);
-            this._urlTextBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this._urlTextBox.Location = new System.Drawing.Point(100, 14);
             this._urlTextBox.Name = "_urlTextBox";
-            this._urlTextBox.Size = new System.Drawing.Size(966, 26);
+            this._urlTextBox.Size = new System.Drawing.Size(526, 20);
             this._urlTextBox.TabIndex = 1;
             this._urlTextBox.Text = "ftp://admin:admin@miniserver:21";
+            this._urlTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this._urlTextBox_KeyDown);
             // 
             // _folderTextBox
             // 
             this._folderTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this._folderTextBox.Location = new System.Drawing.Point(150, 62);
-            this._folderTextBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this._folderTextBox.Location = new System.Drawing.Point(100, 40);
             this._folderTextBox.Name = "_folderTextBox";
-            this._folderTextBox.Size = new System.Drawing.Size(966, 26);
+            this._folderTextBox.Size = new System.Drawing.Size(526, 20);
             this._folderTextBox.TabIndex = 4;
+            this._folderTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this._folderTextBox_KeyDown);
             // 
             // _dataGridView
             // 
@@ -142,16 +157,30 @@
             this._editCol,
             this._downloadCol,
             this._uploadCol});
-            this._dataGridView.Location = new System.Drawing.Point(18, 103);
-            this._dataGridView.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this._dataGridView.Location = new System.Drawing.Point(12, 67);
             this._dataGridView.Name = "_dataGridView";
-            this._dataGridView.RowHeadersWidth = 62;
+            this._dataGridView.RowHeadersWidth = 30;
             this._dataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this._dataGridView.Size = new System.Drawing.Size(1221, 979);
+            this._dataGridView.Size = new System.Drawing.Size(695, 453);
             this._dataGridView.TabIndex = 6;
             this._dataGridView.VirtualMode = true;
             this._dataGridView.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridView_CellContentClick);
             this._dataGridView.CellValueNeeded += new System.Windows.Forms.DataGridViewCellValueEventHandler(this.DataGridView_CellValueNeeded);
+            // 
+            // githubLabel
+            // 
+            this.githubLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.githubLabel.LinkArea = new System.Windows.Forms.LinkArea(0, 10);
+            this.githubLabel.LinkBehavior = System.Windows.Forms.LinkBehavior.HoverUnderline;
+            this.githubLabel.LinkColor = System.Drawing.Color.Blue;
+            this.githubLabel.Location = new System.Drawing.Point(184, 533);
+            this.githubLabel.Name = "githubLabel";
+            this.githubLabel.Size = new System.Drawing.Size(42, 18);
+            this.githubLabel.TabIndex = 9;
+            this.githubLabel.TabStop = true;
+            this.githubLabel.Text = "GitHub";
+            this.githubLabel.UseCompatibleTextRendering = true;
+            this.githubLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.githubLinkLabel_LinkClicked);
             // 
             // _nameCol
             // 
@@ -160,7 +189,7 @@
             this._nameCol.MinimumWidth = 8;
             this._nameCol.Name = "_nameCol";
             this._nameCol.ReadOnly = true;
-            this._nameCol.Width = 235;
+            this._nameCol.Width = 250;
             // 
             // _yearMonthCol
             // 
@@ -211,9 +240,11 @@
             // 
             // MiniserverForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1257, 1145);
+            this.ClientSize = new System.Drawing.Size(719, 561);
+            this.Controls.Add(aboutLabel);
+            this.Controls.Add(this.githubLabel);
             this.Controls.Add(downloadButton);
             this.Controls.Add(this._dataGridView);
             this.Controls.Add(this._folderTextBox);
@@ -223,9 +254,8 @@
             this.Controls.Add(this._urlTextBox);
             this.Controls.Add(refreshFolderButton);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "MiniserverForm";
-            this.Text = "Loxone Miniserver Browser";
+            this.Text = "Loxone Stats Editor - Miniserver Browser";
             this.Load += new System.EventHandler(this.MiniserverForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this._dataGridView)).EndInit();
             this.ResumeLayout(false);
@@ -238,11 +268,13 @@
         private System.Windows.Forms.TextBox _urlTextBox;
         private System.Windows.Forms.TextBox _folderTextBox;
         private System.Windows.Forms.DataGridView _dataGridView;
-        private System.Windows.Forms.DataGridViewTextBoxColumn _nameCol;
-        private System.Windows.Forms.DataGridViewTextBoxColumn _yearMonthCol;
-        private System.Windows.Forms.DataGridViewTextBoxColumn _statusCol;
-        private System.Windows.Forms.DataGridViewButtonColumn _editCol;
-        private System.Windows.Forms.DataGridViewButtonColumn _downloadCol;
-        private System.Windows.Forms.DataGridViewButtonColumn _uploadCol;
+        private LinkLabel githubLabel;
+        private ToolTip toolTip;
+        private DataGridViewTextBoxColumn _nameCol;
+        private DataGridViewTextBoxColumn _yearMonthCol;
+        private DataGridViewTextBoxColumn _statusCol;
+        private DataGridViewButtonColumn _editCol;
+        private DataGridViewButtonColumn _downloadCol;
+        private DataGridViewButtonColumn _uploadCol;
     }
 }

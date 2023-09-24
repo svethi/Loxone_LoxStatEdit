@@ -122,6 +122,12 @@ namespace LoxStatEdit
         #region Methods
         private void RefreshGridView()
         {
+            // provide a empty list to prevent crash
+            if (_msFolder == null)
+            {
+                _msFolder = new List<MsFileInfo>();
+            }
+
             var msMap = _msFolder.ToLookup(e => e.FileName, StringComparer.OrdinalIgnoreCase);
             var localMap = _localFolder.ToLookup(e => e.Name, StringComparer.OrdinalIgnoreCase);
             _fileItems = msMap.Select(e => e.Key).Union(localMap.Select(e => e.Key)).
@@ -138,7 +144,10 @@ namespace LoxStatEdit
 
         private void RefreshMs()
         {
-            _msFolder = MsFileInfo.Load(GetMsUriBuilder().Uri);
+            var uriBuilder = GetMsUriBuilder();
+            if (uriBuilder != null) {
+                _msFolder = MsFileInfo.Load(uriBuilder.Uri);
+            }
         }
 
         private void RefreshLocal()
@@ -150,12 +159,23 @@ namespace LoxStatEdit
 
         private UriBuilder GetMsUriBuilder()
         {
-            var uriBuilder = new UriBuilder(new Uri(_urlTextBox.Text).
-                GetComponents(UriComponents.Scheme | UriComponents.UserInfo |
-                UriComponents.Host | UriComponents.Port, UriFormat.UriEscaped));
-            uriBuilder.Path = "stats";
-            return uriBuilder;
+            try
+            {
+                // escape # in uri by replacing with hex
+                var uriBuilder = new UriBuilder(new Uri(_urlTextBox.Text.Replace("#", "%23")).
+                    GetComponents(UriComponents.Scheme | UriComponents.UserInfo |
+                    UriComponents.Host | UriComponents.Port, UriFormat.UriEscaped));
+                uriBuilder.Path = "stats";
+                return uriBuilder;
+            }
+            catch (UriFormatException ex)
+            {
+                MessageBox.Show(ex.Message, "Error - UriBuilder", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return null;
+            }
         }
+
 
         private Uri GetFileNameUri(string fileName)
         {
@@ -201,6 +221,26 @@ namespace LoxStatEdit
         {
             RefreshLocal();
             RefreshGridView();
+        }
+
+        private void _urlTextBox_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter && !string.IsNullOrWhiteSpace(_folderTextBox.Text))
+            {
+                RefreshMsButton_Click(sender, e);
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+            }
+        }
+
+        private void _folderTextBox_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter && !string.IsNullOrWhiteSpace(_folderTextBox.Text))
+            {
+                RefreshFolderButton_Click(sender, e);
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+            }
         }
 
         private void MiniserverForm_Load(object sender, EventArgs e)
@@ -280,6 +320,12 @@ namespace LoxStatEdit
                 Upload(_fileItems[row.Index]);
             RefreshMs();
             RefreshGridView();
+        }
+
+        // Launch project link
+        private void githubLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/ddeml/LoxStatEdit");
         }
 
         #endregion

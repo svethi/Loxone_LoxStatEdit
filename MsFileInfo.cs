@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Net;
+using System.Windows.Forms;
 
 namespace LoxStatEdit
 {
@@ -14,27 +16,31 @@ namespace LoxStatEdit
 
         public static IList<MsFileInfo> Load(Uri uri)
         {
-            var list = new List<MsFileInfo>();
-            var ftpWebRequest = (FtpWebRequest)FtpWebRequest.Create(uri);
-            ftpWebRequest.Method = WebRequestMethods.Ftp.ListDirectory;
-            using(var response = ftpWebRequest.GetResponse())
-            using(var ftpStream = response.GetResponseStream())
-            using(var streamReader = new StreamReader(ftpStream))
-                while(!streamReader.EndOfStream)
+            try
+            {
+                // TO DO: Does not connect with Miniserver Gen 2. Probably because of TLS
+                var list = new List<MsFileInfo>();
+                var ftpWebRequest = (FtpWebRequest)FtpWebRequest.Create(uri);
+                ftpWebRequest.Method = WebRequestMethods.Ftp.ListDirectory;
+                using (var response = ftpWebRequest.GetResponse())
+                using (var ftpStream = response.GetResponseStream())
+                using (var streamReader = new StreamReader(ftpStream))
+                while (!streamReader.EndOfStream)
                 {
-                    //Hacky but works fair enough in our particular use case (I hope...)
+                    // Hacky but works fair enough in our particular use case (I hope...)
                     var line = streamReader.ReadLine();
+                    Debug.WriteLine(line);
                     int datePos = line.IndexOf(' ', 24);
                     int size;
-                    if(!int.TryParse(line.Substring(18, datePos - 18), out size))
+                    if (!int.TryParse(line.Substring(18, datePos - 18), out size))
                         size = -1;
                     datePos++;
                     int fileNamePos;
                     DateTime dateTime;
-                    if(DateTime.TryParseExact(line.Substring(datePos, 12), "MMM dd HH:mm",
+                    if (DateTime.TryParseExact(line.Substring(datePos, 12), "MMM dd HH:mm",
                         CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
                         fileNamePos = datePos + 13;
-                    else if(DateTime.TryParseExact(line.Substring(datePos, 11), "MMM dd yyyy",
+                    else if (DateTime.TryParseExact(line.Substring(datePos, 11), "MMM dd yyyy",
                         CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
                         fileNamePos = datePos + 12;
                     else fileNamePos = line.LastIndexOf(' ') + 1;
@@ -45,7 +51,23 @@ namespace LoxStatEdit
                         Size = size,
                     });
                 }
-            return list;
+                return list;
+            }
+            catch (WebException ex)
+            {
+                var response = ex.Response as FtpWebResponse;
+                if (response != null)
+                {
+                    MessageBox.Show(ex.Message, "Error  - FTP connection", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error - IList", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return null;
+            }
         }
     }
 }

@@ -1,0 +1,89 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+
+    strategy:
+      matrix:
+        configuration: ['Release']
+        dotnet-version: ['3.1.426']
+
+    runs-on: windows-latest
+
+    # specify variables
+    env:
+      Solution_Name: LoxStatEdit.sln
+      Project_Path: LoxStatEdit.csproj
+
+    # checkout project und git clone project
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    # Install the .NET Core workload
+    - name: Install .NET Core ${{ matrix.dotnet-version }}
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ matrix.dotnet-version }}
+
+    # - name: List installed SDK versions
+    #   run: dotnet --list-sdks
+
+    - name: Set SDK version
+      run: dotnet new globaljson --sdk-version ${{ matrix.dotnet-version }}
+
+    # You can test your matrix by printing the current dotnet version
+    - name: Display dotnet version
+      run: dotnet --version
+
+    # Add MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
+    - name: Setup MSBuild.exe
+      uses: microsoft/setup-msbuild@v1.0.2
+
+    # Execute all unit tests in the solution
+    - name: Execute unit tests
+      run: dotnet test
+
+    # Restore/Download all missing packages
+    - name: NuGet Restore
+      run: nuget restore $env:Solution_Name
+
+
+    # Create the app package by building and packaging the Windows Application Packaging project
+    - name: Create the app package
+      run: msbuild $env:Solution_Name /p:Configuration=$env:Configuration /p:UapAppxPackageBuildMode=$env:Appx_Package_Build_Mode /p:AppxBundle=$env:Appx_Bundle
+      env:
+        Appx_Bundle: Always
+        Appx_Bundle_Platforms: x86|x64
+        Appx_Package_Build_Mode: StoreUpload
+        Configuration: ${{ matrix.configuration }}
+
+    # Remove unneeded data
+    - name: Remove unneeded data
+      run: |
+        Remove-Item -path .\bin\Release\LoxStatEdit.exe.config
+        Remove-Item -path .\bin\Release\LoxStatEdit.pdb
+
+    - name: show folder content
+      run: |
+        Get-ChildItem -Path .\bin\Release
+
+    # Rename folder
+    # - name: Rename folder
+    #   run: Rename-Item -Path ".\bin\Release" -NewName "LoxStatEdit"
+
+    # Upload the files: https://github.com/marketplace/actions/upload-a-build-artifact
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: LoxStatEdit.exe
+        path: .\bin\Release\LoxStatEdit.exe
+        # default retention 90 days
+        retention-days: 30

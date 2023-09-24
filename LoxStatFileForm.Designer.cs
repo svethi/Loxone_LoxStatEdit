@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.Windows.Forms.Label fileInfoLabel;
             System.Windows.Forms.Button saveButton;
             System.Windows.Forms.Button loadButton;
@@ -49,6 +50,7 @@
             this._valueColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this._fileNameTextBox = new System.Windows.Forms.TextBox();
             this._chart = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             fileInfoLabel = new System.Windows.Forms.Label();
             saveButton = new System.Windows.Forms.Button();
             loadButton = new System.Windows.Forms.Button();
@@ -60,55 +62,53 @@
             // 
             // fileInfoLabel
             // 
-            fileInfoLabel.Location = new System.Drawing.Point(18, 66);
-            fileInfoLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            fileInfoLabel.Location = new System.Drawing.Point(12, 43);
             fileInfoLabel.Name = "fileInfoLabel";
-            fileInfoLabel.Size = new System.Drawing.Size(90, 20);
+            fileInfoLabel.Size = new System.Drawing.Size(60, 13);
             fileInfoLabel.TabIndex = 4;
             fileInfoLabel.Text = "File Info:";
             // 
             // saveButton
             // 
             saveButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            saveButton.Location = new System.Drawing.Point(1844, 58);
-            saveButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            saveButton.Location = new System.Drawing.Point(800, 38);
             saveButton.Name = "saveButton";
-            saveButton.Size = new System.Drawing.Size(112, 35);
+            saveButton.Size = new System.Drawing.Size(75, 23);
             saveButton.TabIndex = 7;
-            saveButton.Text = "Save";
+            saveButton.Text = "&Save";
+            this.toolTip.SetToolTip(saveButton, "ALT + S");
             saveButton.UseVisualStyleBackColor = true;
             saveButton.Click += new System.EventHandler(this.SaveButton_Click);
             // 
             // loadButton
             // 
             loadButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            loadButton.Location = new System.Drawing.Point(1844, 18);
-            loadButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            loadButton.Location = new System.Drawing.Point(800, 12);
             loadButton.Name = "loadButton";
-            loadButton.Size = new System.Drawing.Size(112, 35);
+            loadButton.Size = new System.Drawing.Size(75, 23);
             loadButton.TabIndex = 3;
-            loadButton.Text = "Load";
+            loadButton.Text = "&Load";
+            this.toolTip.SetToolTip(loadButton, "ALT + L");
             loadButton.UseVisualStyleBackColor = true;
             loadButton.Click += new System.EventHandler(this.LoadButton_Click);
             // 
             // browseButton
             // 
             browseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            browseButton.Location = new System.Drawing.Point(1722, 18);
-            browseButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            browseButton.Location = new System.Drawing.Point(719, 12);
             browseButton.Name = "browseButton";
-            browseButton.Size = new System.Drawing.Size(112, 35);
+            browseButton.Size = new System.Drawing.Size(75, 23);
             browseButton.TabIndex = 2;
-            browseButton.Text = "Browse...";
+            browseButton.Text = "&Browse...";
+            this.toolTip.SetToolTip(browseButton, "ALT + B");
             browseButton.UseVisualStyleBackColor = true;
             browseButton.Click += new System.EventHandler(this.BrowseButton_Click);
             // 
             // fileNameLabel
             // 
-            fileNameLabel.Location = new System.Drawing.Point(18, 26);
-            fileNameLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            fileNameLabel.Location = new System.Drawing.Point(12, 17);
             fileNameLabel.Name = "fileNameLabel";
-            fileNameLabel.Size = new System.Drawing.Size(90, 20);
+            fileNameLabel.Size = new System.Drawing.Size(60, 13);
             fileNameLabel.TabIndex = 0;
             fileNameLabel.Text = "File Name:";
             // 
@@ -117,12 +117,12 @@
             this._problemButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this._problemButton.Enabled = false;
             this._problemButton.ForeColor = System.Drawing.Color.Red;
-            this._problemButton.Location = new System.Drawing.Point(1722, 58);
-            this._problemButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this._problemButton.Location = new System.Drawing.Point(719, 38);
             this._problemButton.Name = "_problemButton";
-            this._problemButton.Size = new System.Drawing.Size(112, 35);
+            this._problemButton.Size = new System.Drawing.Size(75, 23);
             this._problemButton.TabIndex = 6;
-            this._problemButton.Text = "Problems";
+            this._problemButton.Text = "&Problems";
+            this.toolTip.SetToolTip(this._problemButton, "ALT + P");
             this._problemButton.UseVisualStyleBackColor = true;
             this._problemButton.Click += new System.EventHandler(this.ProblemButton_Click);
             // 
@@ -130,11 +130,10 @@
             // 
             this._fileInfoTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this._fileInfoTextBox.Location = new System.Drawing.Point(117, 62);
-            this._fileInfoTextBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this._fileInfoTextBox.Location = new System.Drawing.Point(78, 40);
             this._fileInfoTextBox.Name = "_fileInfoTextBox";
             this._fileInfoTextBox.ReadOnly = true;
-            this._fileInfoTextBox.Size = new System.Drawing.Size(1594, 26);
+            this._fileInfoTextBox.Size = new System.Drawing.Size(635, 20);
             this._fileInfoTextBox.TabIndex = 5;
             this._fileInfoTextBox.Text = "(Enter or browse a file name end press the Load button)";
             // 
@@ -149,11 +148,10 @@
             this.indexColumn,
             this._timestampColumn,
             this._valueColumn});
-            this._dataGridView.Location = new System.Drawing.Point(22, 102);
-            this._dataGridView.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this._dataGridView.Location = new System.Drawing.Point(15, 66);
             this._dataGridView.Name = "_dataGridView";
-            this._dataGridView.RowHeadersWidth = 62;
-            this._dataGridView.Size = new System.Drawing.Size(900, 989);
+            this._dataGridView.RowHeadersWidth = 30;
+            this._dataGridView.Size = new System.Drawing.Size(376, 483);
             this._dataGridView.TabIndex = 8;
             this._dataGridView.VirtualMode = true;
             this._dataGridView.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this._dataGridView_CellContentClick);
@@ -193,16 +191,15 @@
             this._valueColumn.HeaderText = "Value";
             this._valueColumn.MinimumWidth = 8;
             this._valueColumn.Name = "_valueColumn";
-            this._valueColumn.Width = 80;
+            this._valueColumn.Width = 130;
             // 
             // _fileNameTextBox
             // 
             this._fileNameTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this._fileNameTextBox.Location = new System.Drawing.Point(117, 22);
-            this._fileNameTextBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this._fileNameTextBox.Location = new System.Drawing.Point(78, 14);
             this._fileNameTextBox.Name = "_fileNameTextBox";
-            this._fileNameTextBox.Size = new System.Drawing.Size(1594, 26);
+            this._fileNameTextBox.Size = new System.Drawing.Size(635, 20);
             this._fileNameTextBox.TabIndex = 1;
             // 
             // _chart
@@ -210,27 +207,47 @@
             this._chart.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this._chart.BorderSkin.BorderColor = System.Drawing.Color.IndianRed;
+            chartArea1.AxisX.LineColor = System.Drawing.Color.LightGray;
+            chartArea1.AxisX.MajorGrid.LineColor = System.Drawing.Color.LightGray;
+            chartArea1.AxisX.MajorTickMark.LineColor = System.Drawing.Color.LightGray;
+            chartArea1.AxisX.MinorGrid.LineColor = System.Drawing.Color.LightGray;
+            chartArea1.AxisX.MinorTickMark.LineColor = System.Drawing.Color.LightGray;
+            chartArea1.AxisY.LineColor = System.Drawing.Color.LightGray;
+            chartArea1.AxisY.MajorGrid.LineColor = System.Drawing.Color.LightGray;
+            chartArea1.AxisY.MajorTickMark.LineColor = System.Drawing.Color.LightGray;
+            chartArea1.AxisY.MinorGrid.LineColor = System.Drawing.Color.LightGray;
+            chartArea1.AxisY.MinorTickMark.LineColor = System.Drawing.Color.LightGray;
             chartArea1.Name = "ChartArea1";
             this._chart.ChartAreas.Add(chartArea1);
+            this._chart.Cursor = System.Windows.Forms.Cursors.Cross;
             this._chart.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             legend1.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
             legend1.Name = "Legend1";
             this._chart.Legends.Add(legend1);
-            this._chart.Location = new System.Drawing.Point(929, 102);
+            this._chart.Location = new System.Drawing.Point(396, 66);
+            this._chart.Margin = new System.Windows.Forms.Padding(2);
             this._chart.Name = "_chart";
+            this._chart.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.None;
+            this._chart.PaletteCustomColors = new System.Drawing.Color[] {
+        System.Drawing.Color.Lime,
+        System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))))};
             series1.ChartArea = "ChartArea1";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series1.EmptyPointStyle.LabelForeColor = System.Drawing.Color.Bisque;
+            series1.IsValueShownAsLabel = true;
             series1.Legend = "Legend1";
             series1.Name = "Series1";
             this._chart.Series.Add(series1);
-            this._chart.Size = new System.Drawing.Size(1027, 989);
+            this._chart.Size = new System.Drawing.Size(477, 483);
             this._chart.TabIndex = 9;
             this._chart.Text = "chart1";
             // 
             // LoxStatFileForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1974, 1109);
+            this.ClientSize = new System.Drawing.Size(884, 561);
             this.Controls.Add(this._chart);
             this.Controls.Add(this._problemButton);
             this.Controls.Add(saveButton);
@@ -242,9 +259,8 @@
             this.Controls.Add(this._fileNameTextBox);
             this.Controls.Add(browseButton);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "LoxStatFileForm";
-            this.Text = "Loxone Status File Editor";
+            this.Text = "Loxone Stats Editor - File Editor";
             this.Load += new System.EventHandler(this.MainForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this._dataGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this._chart)).EndInit();
@@ -259,11 +275,12 @@
         private System.Windows.Forms.TextBox _fileInfoTextBox;
         private System.Windows.Forms.DataGridView _dataGridView;
         private System.Windows.Forms.Button _problemButton;
+        private System.Windows.Forms.TextBox _fileNameTextBox;
+        private System.Windows.Forms.DataVisualization.Charting.Chart _chart;
         private System.Windows.Forms.DataGridViewTextBoxColumn indexColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn _timestampColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn _valueColumn;
-        private System.Windows.Forms.TextBox _fileNameTextBox;
-        private System.Windows.Forms.DataVisualization.Charting.Chart _chart;
+        private System.Windows.Forms.ToolTip toolTip;
     }
 }
 
