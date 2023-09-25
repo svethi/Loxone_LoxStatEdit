@@ -186,26 +186,56 @@ namespace LoxStatEdit
 
         private void Download(FileItem fileItem)
         {
-            var ftpWebRequest = (FtpWebRequest)FtpWebRequest.
+            try
+            {
+                var ftpWebRequest = (FtpWebRequest)FtpWebRequest.
                 Create(GetFileNameUri(fileItem.FileName));
-            ftpWebRequest.Method = WebRequestMethods.Ftp.DownloadFile;
-            var targetFileName = Path.Combine(_folderTextBox.Text, fileItem.FileName);
-            using(var response = ftpWebRequest.GetResponse())
-            using(var ftpStream = response.GetResponseStream())
-            using(var fileStream = File.OpenWrite(targetFileName))
-                ftpStream.CopyTo(fileStream);
-            File.SetLastWriteTime(targetFileName, fileItem.MsFileInfo.Date);
+                ftpWebRequest.Method = WebRequestMethods.Ftp.DownloadFile;
+                var targetFileName = Path.Combine(_folderTextBox.Text, fileItem.FileName);
+                using(var response = ftpWebRequest.GetResponse())
+                using(var ftpStream = response.GetResponseStream())
+                using(var fileStream = File.OpenWrite(targetFileName))
+                    ftpStream.CopyTo(fileStream);
+                File.SetLastWriteTime(targetFileName, fileItem.MsFileInfo.Date);
+            }
+            catch (WebException ex)
+            {
+                var response = ex.Response as FtpWebResponse;
+                if (response != null)
+                {
+                    MessageBox.Show(ex.Message, "Error  - FTP connection", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error - IList", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void Upload(FileItem fileItem)
         {
-            var ftpWebRequest = (FtpWebRequest)FtpWebRequest.Create(GetFileNameUri(fileItem.FileName));
-            ftpWebRequest.Method = WebRequestMethods.Ftp.UploadFile;
-            using(var fileStream = File.OpenRead(
-                Path.Combine(_folderTextBox.Text, fileItem.FileInfo.FullName)))
-            using(var ftpStream = ftpWebRequest.GetRequestStream())
-                fileStream.CopyTo(ftpStream);
-            using(var response = ftpWebRequest.GetResponse()) { }
+            try
+            {
+                var ftpWebRequest = (FtpWebRequest)FtpWebRequest.Create(GetFileNameUri(fileItem.FileName));
+                ftpWebRequest.Method = WebRequestMethods.Ftp.UploadFile;
+                using (var fileStream = File.OpenRead(
+                    Path.Combine(_folderTextBox.Text, fileItem.FileInfo.FullName)))
+                using (var ftpStream = ftpWebRequest.GetRequestStream())
+                    fileStream.CopyTo(ftpStream);
+                using (var response = ftpWebRequest.GetResponse()) { }
+            }
+            catch (WebException ex)
+            {
+                var response = ex.Response as FtpWebResponse;
+                if (response != null)
+                {
+                    MessageBox.Show(ex.Message, "Error  - FTP connection", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error - IList", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         #endregion
@@ -268,8 +298,8 @@ namespace LoxStatEdit
                     case 0: e.Value = fileItem.Name; break;
                     case 1: e.Value = fileItem.YearMonth; break;
                     case 2: e.Value = fileItem.Status; break;
-                    case 3: e.Value = "Edit"; break;
-                    case 4: e.Value = "Download"; break;
+                    case 3: e.Value = "Download"; break;
+                    case 4: e.Value = "Edit"; break;
                     case 5: e.Value = "Upload"; break;
                     default: e.Value = null; break;
                 }
@@ -289,14 +319,14 @@ namespace LoxStatEdit
             var fileItem = _fileItems[e.RowIndex];
             switch(e.ColumnIndex)
             {
-                case 3: //Edit
-                    using(var form = new LoxStatFileForm(fileItem.FileInfo.FullName))
-                        form.ShowDialog(this);
-                    break;
-                case 4: //Download
+                case 3: //Download
                     Download(fileItem);
                     RefreshLocal();
                     RefreshGridView();
+                    break;
+                case 4: //Edit
+                    using(var form = new LoxStatFileForm(fileItem.FileInfo.FullName))
+                        form.ShowDialog(this);
                     break;
                 case 5: //Upload
                     Upload(fileItem);

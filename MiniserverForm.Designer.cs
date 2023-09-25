@@ -43,14 +43,14 @@ namespace LoxStatEdit
             this._urlTextBox = new System.Windows.Forms.TextBox();
             this._folderTextBox = new System.Windows.Forms.TextBox();
             this._dataGridView = new System.Windows.Forms.DataGridView();
-            this.githubLabel = new System.Windows.Forms.LinkLabel();
-            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this._nameCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this._yearMonthCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this._statusCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this._editCol = new System.Windows.Forms.DataGridViewButtonColumn();
             this._downloadCol = new System.Windows.Forms.DataGridViewButtonColumn();
+            this._editCol = new System.Windows.Forms.DataGridViewButtonColumn();
             this._uploadCol = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.githubLabel = new System.Windows.Forms.LinkLabel();
+            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             urlLabel = new System.Windows.Forms.Label();
             refreshFolderButton = new System.Windows.Forms.Button();
             refreshMsButton = new System.Windows.Forms.Button();
@@ -119,7 +119,7 @@ namespace LoxStatEdit
             aboutLabel.Name = "aboutLabel";
             aboutLabel.Size = new System.Drawing.Size(171, 18);
             aboutLabel.TabIndex = 8;
-            aboutLabel.Text = "LoxStatEdit v1.0.1.0 (2023.09.24)";
+            aboutLabel.Text = "LoxStatEdit v1.0.1.1 (2023.09.25)";
             // 
             // _urlTextBox
             // 
@@ -129,7 +129,7 @@ namespace LoxStatEdit
             this._urlTextBox.Name = "_urlTextBox";
             this._urlTextBox.Size = new System.Drawing.Size(526, 20);
             this._urlTextBox.TabIndex = 1;
-            this._urlTextBox.Text = "ftp://admin:admin@miniserver:21";
+            this._urlTextBox.Text = "ftp://adminname:adminpasswort@miniserver-ip-oder-hostname:21";
             this._urlTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this._urlTextBox_KeyDown);
             // 
             // _folderTextBox
@@ -154,8 +154,8 @@ namespace LoxStatEdit
             this._nameCol,
             this._yearMonthCol,
             this._statusCol,
-            this._editCol,
             this._downloadCol,
+            this._editCol,
             this._uploadCol});
             this._dataGridView.Location = new System.Drawing.Point(12, 67);
             this._dataGridView.Name = "_dataGridView";
@@ -166,21 +166,6 @@ namespace LoxStatEdit
             this._dataGridView.VirtualMode = true;
             this._dataGridView.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridView_CellContentClick);
             this._dataGridView.CellValueNeeded += new System.Windows.Forms.DataGridViewCellValueEventHandler(this.DataGridView_CellValueNeeded);
-            // 
-            // githubLabel
-            // 
-            this.githubLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.githubLabel.LinkArea = new System.Windows.Forms.LinkArea(0, 10);
-            this.githubLabel.LinkBehavior = System.Windows.Forms.LinkBehavior.HoverUnderline;
-            this.githubLabel.LinkColor = System.Drawing.Color.Blue;
-            this.githubLabel.Location = new System.Drawing.Point(184, 533);
-            this.githubLabel.Name = "githubLabel";
-            this.githubLabel.Size = new System.Drawing.Size(42, 18);
-            this.githubLabel.TabIndex = 9;
-            this.githubLabel.TabStop = true;
-            this.githubLabel.Text = "GitHub";
-            this.githubLabel.UseCompatibleTextRendering = true;
-            this.githubLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.githubLinkLabel_LinkClicked);
             // 
             // _nameCol
             // 
@@ -211,15 +196,6 @@ namespace LoxStatEdit
             this._statusCol.ReadOnly = true;
             this._statusCol.Width = 150;
             // 
-            // _editCol
-            // 
-            this._editCol.HeaderText = "Edit";
-            this._editCol.MinimumWidth = 8;
-            this._editCol.Name = "_editCol";
-            this._editCol.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this._editCol.Text = "Edit";
-            this._editCol.Width = 50;
-            // 
             // _downloadCol
             // 
             this._downloadCol.HeaderText = "Download";
@@ -229,6 +205,15 @@ namespace LoxStatEdit
             this._downloadCol.Text = "Download";
             this._downloadCol.Width = 60;
             // 
+            // _editCol
+            // 
+            this._editCol.HeaderText = "Edit";
+            this._editCol.MinimumWidth = 8;
+            this._editCol.Name = "_editCol";
+            this._editCol.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this._editCol.Text = "Edit";
+            this._editCol.Width = 50;
+            // 
             // _uploadCol
             // 
             this._uploadCol.HeaderText = "Upload";
@@ -237,6 +222,21 @@ namespace LoxStatEdit
             this._uploadCol.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this._uploadCol.Text = "Upload";
             this._uploadCol.Width = 60;
+            // 
+            // githubLabel
+            // 
+            this.githubLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.githubLabel.LinkArea = new System.Windows.Forms.LinkArea(0, 10);
+            this.githubLabel.LinkBehavior = System.Windows.Forms.LinkBehavior.HoverUnderline;
+            this.githubLabel.LinkColor = System.Drawing.Color.Blue;
+            this.githubLabel.Location = new System.Drawing.Point(184, 533);
+            this.githubLabel.Name = "githubLabel";
+            this.githubLabel.Size = new System.Drawing.Size(42, 18);
+            this.githubLabel.TabIndex = 9;
+            this.githubLabel.TabStop = true;
+            this.githubLabel.Text = "GitHub";
+            this.githubLabel.UseCompatibleTextRendering = true;
+            this.githubLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.githubLinkLabel_LinkClicked);
             // 
             // MiniserverForm
             // 
@@ -273,8 +273,8 @@ namespace LoxStatEdit
         private DataGridViewTextBoxColumn _nameCol;
         private DataGridViewTextBoxColumn _yearMonthCol;
         private DataGridViewTextBoxColumn _statusCol;
-        private DataGridViewButtonColumn _editCol;
         private DataGridViewButtonColumn _downloadCol;
+        private DataGridViewButtonColumn _editCol;
         private DataGridViewButtonColumn _uploadCol;
     }
 }

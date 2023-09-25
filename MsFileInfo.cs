@@ -64,7 +64,23 @@ namespace LoxStatEdit
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error - IList", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (ex.Source == "mscorlib" && ex.HResult == -2146233086)
+                {
+                    MessageBox.Show(
+                        "The connection to a Miniserver newer generation (with TLS) is " + 
+                        "not working yet. Use a third party FTP client (e.g. Filezilla, " + 
+                        "Windows Explorer, ...) to download and upload the statistics.\n\n" + 
+                        "Feel free to contribute to this project and help us to fix this. " + 
+                        "You find the GitHub link at the bottom of the main window.",
+                        "Error - IList",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error
+                    );
+                }
+                else
+                {
+                    MessageBox.Show(ex.Message, "Error - IList", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
 
                 return null;
             }
