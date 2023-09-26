@@ -1,8 +1,8 @@
 # Changelog
 
-## Known issues
+## v1.0.2.0
 
-* FTP connection seems to not be possible with Miniserver Gen 2
+* Added: Support Miniserver newer generation for FTP download/upload by @mr-manuel
 
 ## v1.0.1.1
 

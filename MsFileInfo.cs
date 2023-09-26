@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace LoxStatEdit
@@ -18,38 +19,40 @@ namespace LoxStatEdit
         {
             try
             {
-                // TO DO: Does not connect with Miniserver Gen 2. Probably because of TLS
                 var list = new List<MsFileInfo>();
                 var ftpWebRequest = (FtpWebRequest)FtpWebRequest.Create(uri);
-                ftpWebRequest.Method = WebRequestMethods.Ftp.ListDirectory;
+                ftpWebRequest.Method = WebRequestMethods.Ftp.ListDirectoryDetails;
                 using (var response = ftpWebRequest.GetResponse())
                 using (var ftpStream = response.GetResponseStream())
                 using (var streamReader = new StreamReader(ftpStream))
                 while (!streamReader.EndOfStream)
                 {
-                    // Hacky but works fair enough in our particular use case (I hope...)
                     var line = streamReader.ReadLine();
-                    Debug.WriteLine(line);
-                    int datePos = line.IndexOf(' ', 24);
-                    int size;
-                    if (!int.TryParse(line.Substring(18, datePos - 18), out size))
-                        size = -1;
-                    datePos++;
-                    int fileNamePos;
-                    DateTime dateTime;
-                    if (DateTime.TryParseExact(line.Substring(datePos, 12), "MMM dd HH:mm",
-                        CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
-                        fileNamePos = datePos + 13;
-                    else if (DateTime.TryParseExact(line.Substring(datePos, 11), "MMM dd yyyy",
-                        CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
-                        fileNamePos = datePos + 12;
-                    else fileNamePos = line.LastIndexOf(' ') + 1;
-                    list.Add(new MsFileInfo
+
+                    // string pattern that matches Miniserver Gen 1 and Miniserver Gen 2
+                    string pattern = @"[-rwx]{10}\s+[0-9]+\s+[0-9]+\s+[0-9]+\s+([0-9]+)\s+([A-Za-z]{3}\s+[0-9]{1,2}\s+[0-9:]+)\s+([0-9a-z_\-\.]+)";
+                    var result = Regex.Match(line, pattern);
+
+                    if (result.Success)
                     {
-                        FileName = line.Substring(fileNamePos),
-                        Date = dateTime,
-                        Size = size,
-                    });
+                        var groups = result.Groups;
+                        int.TryParse(groups[1].Value, out int size);
+
+                        DateTime dateTime;
+                        if (DateTime.TryParseExact(groups[2].Value.Replace("  ", " "), "MMM dd HH:mm",
+                            CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime)) ;
+                        else if (DateTime.TryParseExact(groups[2].Value.Replace("  ", " "), "MMM dd yyyy",
+                            CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime)) ;
+
+                        var fileName = groups[3].Value;
+                        
+                        list.Add(new MsFileInfo
+                        {
+                            FileName = fileName,
+                            Date = dateTime,
+                            Size = size,
+                        });
+                    }
                 }
                 return list;
             }
@@ -64,23 +67,7 @@ namespace LoxStatEdit
             }
             catch (Exception ex)
             {
-                if (ex.Source == "mscorlib" && ex.HResult == -2146233086)
-                {
-                    MessageBox.Show(
-                        "The connection to a Miniserver newer generation (with TLS) is " + 
-                        "not working yet. Use a third party FTP client (e.g. Filezilla, " + 
-                        "Windows Explorer, ...) to download and upload the statistics.\n\n" + 
-                        "Feel free to contribute to this project and help us to fix this. " + 
-                        "You find the GitHub link at the bottom of the main window.",
-                        "Error - IList",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error
-                    );
-                }
-                else
-                {
-                    MessageBox.Show(ex.Message, "Error - IList", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                MessageBox.Show(ex.Message, "Error - IList", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return null;
             }

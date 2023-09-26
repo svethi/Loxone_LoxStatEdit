@@ -119,7 +119,7 @@ namespace LoxStatEdit
             aboutLabel.Name = "aboutLabel";
             aboutLabel.Size = new System.Drawing.Size(171, 18);
             aboutLabel.TabIndex = 8;
-            aboutLabel.Text = "LoxStatEdit v1.0.1.1 (2023.09.25)";
+            aboutLabel.Text = "LoxStatEdit v1.0.2.0 (2023.09.26)";
             // 
             // _urlTextBox
             // 
@@ -129,7 +129,7 @@ namespace LoxStatEdit
             this._urlTextBox.Name = "_urlTextBox";
             this._urlTextBox.Size = new System.Drawing.Size(526, 20);
             this._urlTextBox.TabIndex = 1;
-            this._urlTextBox.Text = "ftp://adminname:adminpasswort@miniserver-ip-oder-hostname:21";
+            this._urlTextBox.Text = "ftp://adminname:adminpassword@miniserver-ip-or-hostname:21";
             this._urlTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this._urlTextBox_KeyDown);
             // 
             // _folderTextBox

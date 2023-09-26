@@ -355,7 +355,7 @@ namespace LoxStatEdit
         // Launch project link
         private void githubLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            System.Diagnostics.Process.Start("https://github.com/ddeml/LoxStatEdit");
+            System.Diagnostics.Process.Start("https://github.com/mr-manuel/Loxone_LoxStatEdit");
         }
 
         #endregion
