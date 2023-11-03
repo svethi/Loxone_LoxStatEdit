@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.0.3.0
+
+* Changed: Fixed Win32-FileTime error
+
 ## v1.0.2.0
 
 * Added: Support Miniserver newer generation for FTP download/upload by @mr-manuel

@@ -119,7 +119,7 @@ namespace LoxStatEdit
             aboutLabel.Name = "aboutLabel";
             aboutLabel.Size = new System.Drawing.Size(171, 18);
             aboutLabel.TabIndex = 8;
-            aboutLabel.Text = "LoxStatEdit v1.0.2.0 (2023.09.26)";
+            aboutLabel.Text = "LoxStatEdit v1.0.3.0 (2023.11.02)";
             // 
             // _urlTextBox
             // 

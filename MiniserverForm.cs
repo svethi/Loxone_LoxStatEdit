@@ -195,20 +195,24 @@ namespace LoxStatEdit
                 using(var response = ftpWebRequest.GetResponse())
                 using(var ftpStream = response.GetResponseStream())
                 using(var fileStream = File.OpenWrite(targetFileName))
-                    ftpStream.CopyTo(fileStream);
+                ftpStream.CopyTo(fileStream);                
                 File.SetLastWriteTime(targetFileName, fileItem.MsFileInfo.Date);
+
+                // Log FTP output
+                // File.AppendAllText("./custom.log", $"Downloaded {fileItem.FileName} - Setting last write time to {fileItem.MsFileInfo.Date}\n\n");
+
             }
             catch (WebException ex)
             {
                 var response = ex.Response as FtpWebResponse;
                 if (response != null)
                 {
-                    MessageBox.Show(ex.Message, "Error  - FTP connection", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show($"# Message\n{ex.Message}\n\n# Data\n{ex.Data}\n\n# StackTrace\n{ex.StackTrace}", "Error  - FTP connection", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error - IList", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"# Message\n{ex.Message}\n\n# Data\n{ex.Data}\n\n# StackTrace\n{ex.StackTrace}", "Error - IList", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -229,12 +233,12 @@ namespace LoxStatEdit
                 var response = ex.Response as FtpWebResponse;
                 if (response != null)
                 {
-                    MessageBox.Show(ex.Message, "Error  - FTP connection", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show($"# Message\n{ex.Message}\n\n# Data\n{ex.Data}\n\n# StackTrace\n{ex.StackTrace}", "Error  - FTP connection", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error - IList", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"# Message\n{ex.Message}\n\n# Data\n{ex.Data}\n\n# StackTrace\n{ex.StackTrace}", "Error - IList", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
