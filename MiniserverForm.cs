@@ -130,6 +130,15 @@ namespace LoxStatEdit
                 _msFolder = new List<MsFileInfo>();
             }
 
+            // Save the current scrolling position
+            int scrollPosition = _dataGridView.FirstDisplayedScrollingRowIndex;
+            Console.WriteLine($"Scroll position: {scrollPosition}");
+
+            // Save the current selection
+            var selectedCells = _dataGridView.SelectedCells.Cast<DataGridViewCell>()
+                .Select(cell => new { cell.RowIndex, cell.ColumnIndex })
+                .ToList();
+
             var msMap = _msFolder.ToLookup(e => e.FileName, StringComparer.OrdinalIgnoreCase);
             var localMap = _localFolder.ToLookup(e => e.Name, StringComparer.OrdinalIgnoreCase);
 
@@ -200,6 +209,27 @@ namespace LoxStatEdit
 
             // Bind the SortableBindingList to the DataGridView
             _dataGridView.DataSource = _fileItems;
+
+            // Restore the scrolling position
+            if (_dataGridView.RowCount > 0 && scrollPosition != -1 && scrollPosition < _dataGridView.RowCount)
+            {
+                _dataGridView.FirstDisplayedScrollingRowIndex = scrollPosition;
+            }
+
+            // Clear the default selection
+            _dataGridView.ClearSelection();
+
+            // Restore the selection
+            if (selectedCells.Any())
+            {
+                foreach (var cell in selectedCells)
+                {
+                    if (cell.RowIndex < _dataGridView.RowCount && cell.ColumnIndex < _dataGridView.ColumnCount)
+                    {
+                        _dataGridView.Rows[cell.RowIndex].Cells[cell.ColumnIndex].Selected = true;
+                    }
+                }
+            }
         }
 
         private void RefreshMs()
