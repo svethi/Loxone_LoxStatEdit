@@ -132,19 +132,73 @@ namespace LoxStatEdit
 
             var msMap = _msFolder.ToLookup(e => e.FileName, StringComparer.OrdinalIgnoreCase);
             var localMap = _localFolder.ToLookup(e => e.Name, StringComparer.OrdinalIgnoreCase);
-            _fileItems = msMap.Select(e => e.Key).Union(localMap.Select(e => e.Key)).
+
+            // Create a new SortableBindingList
+            _fileItems = new SortableBindingList<FileItem>();
+
+            // Get the data
+            var data = msMap.Select(e => e.Key).Union(localMap.Select(e => e.Key)).
                 Select(f => new FileItem
                 {
                     MsFileInfo = msMap[f].FirstOrDefault(),
                     FileInfo = localMap[f].FirstOrDefault(),
                 }).
-                // Order by descriptio
-                //OrderBy(f => f).
                 // Order by filename if available else by name
                 OrderBy(f => f.MsFileInfo?.FileName ?? f.FileInfo?.Name).
                 ToList();
-            _dataGridView.RowCount = _fileItems.Count;
-            _dataGridView.Refresh();
+
+            // Add the data to the SortableBindingList
+            foreach (var item in data)
+            {
+                _fileItems.Add(item);
+            }
+
+            // Disable automatic column generation
+            _dataGridView.AutoGenerateColumns = false;
+
+            // Clear existing columns
+            _dataGridView.Columns.Clear();
+
+            // Add columns manually in the order you want
+            _dataGridView.Columns.Add(new DataGridViewTextBoxColumn {
+                DataPropertyName = "FileName",
+                HeaderText = "File",
+                Width = 250
+            });
+            _dataGridView.Columns.Add(new DataGridViewTextBoxColumn {
+                DataPropertyName = "Name",
+                HeaderText = "Description",
+                Width = 250
+            });
+            _dataGridView.Columns.Add(new DataGridViewTextBoxColumn {
+                DataPropertyName = "YearMonth",
+                HeaderText = "Year/Month",
+                Width = 90,
+                DefaultCellStyle = { Format = "yyyy-MM" }
+            });
+            _dataGridView.Columns.Add(new DataGridViewTextBoxColumn {
+                DataPropertyName = "Status",
+                HeaderText = "Status",
+                Width = 100
+            });
+            _dataGridView.Columns.Add(new DataGridViewButtonColumn {
+                DataPropertyName = "Download",
+                HeaderText = "Download",
+                Width = 60
+            });
+            _dataGridView.Columns.Add(new DataGridViewButtonColumn {
+                DataPropertyName = "Edit",
+                HeaderText = "Edit",
+                Width = 50
+            });
+            _dataGridView.Columns.Add(new DataGridViewButtonColumn {
+                DataPropertyName = "Upload",
+                HeaderText = "Upload",
+                Width = 60
+            });
+
+            // Bind the SortableBindingList to the DataGridView
+            _dataGridView.DataSource = _fileItems;
         }
 
         private void RefreshMs()
@@ -246,9 +300,6 @@ namespace LoxStatEdit
                 if (response != null)
                 {
                     MessageBox.Show(ex.Message, "Error  - FTP connection", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    #if DEBUG
-                        Debugger.Break();
-                    #endif
                 }
 
                 return false;

@@ -77,9 +77,6 @@ namespace LoxStatEdit
                 if (response != null)
                 {
                     MessageBox.Show(ex.Message, "Error  - FTP connection", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    #if DEBUG
-                        Debugger.Break();
-                    #endif
                 }
                 return null;
             }

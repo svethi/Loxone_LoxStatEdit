@@ -68,6 +68,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SortableBindingList.cs" />
     <EmbeddedResource Include="MiniserverForm.resx">
       <DependentUpon>MiniserverForm.cs</DependentUpon>
     </EmbeddedResource>

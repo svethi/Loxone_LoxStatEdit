@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace LoxStatEdit
@@ -292,6 +292,7 @@ namespace LoxStatEdit
             // 
             // progressLabel
             // 
+            this.progressLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.progressLabel.AutoSize = true;
             this.progressLabel.BackColor = System.Drawing.Color.Transparent;
             this.progressLabel.Location = new System.Drawing.Point(568, 532);
