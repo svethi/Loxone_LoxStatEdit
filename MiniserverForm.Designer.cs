@@ -51,6 +51,7 @@ namespace LoxStatEdit
             this._uploadCol = new System.Windows.Forms.DataGridViewButtonColumn();
             this.githubLabel = new System.Windows.Forms.LinkLabel();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.donateLabel = new System.Windows.Forms.LinkLabel();
             urlLabel = new System.Windows.Forms.Label();
             refreshFolderButton = new System.Windows.Forms.Button();
             refreshMsButton = new System.Windows.Forms.Button();
@@ -238,11 +239,27 @@ namespace LoxStatEdit
             this.githubLabel.UseCompatibleTextRendering = true;
             this.githubLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.githubLinkLabel_LinkClicked);
             // 
+            // donateLabel
+            // 
+            this.donateLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.donateLabel.LinkArea = new System.Windows.Forms.LinkArea(0, 20);
+            this.donateLabel.LinkBehavior = System.Windows.Forms.LinkBehavior.HoverUnderline;
+            this.donateLabel.LinkColor = System.Drawing.Color.Blue;
+            this.donateLabel.Location = new System.Drawing.Point(232, 533);
+            this.donateLabel.Name = "donateLabel";
+            this.donateLabel.Size = new System.Drawing.Size(96, 18);
+            this.donateLabel.TabIndex = 10;
+            this.donateLabel.TabStop = true;
+            this.donateLabel.Text = "Donate && Support";
+            this.donateLabel.UseCompatibleTextRendering = true;
+            this.donateLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.donateLabel_LinkClicked);
+            // 
             // MiniserverForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(719, 561);
+            this.Controls.Add(this.donateLabel);
             this.Controls.Add(aboutLabel);
             this.Controls.Add(this.githubLabel);
             this.Controls.Add(downloadButton);
@@ -276,5 +293,6 @@ namespace LoxStatEdit
         private DataGridViewButtonColumn _downloadCol;
         private DataGridViewButtonColumn _editCol;
         private DataGridViewButtonColumn _uploadCol;
+        private LinkLabel donateLabel;
     }
 }

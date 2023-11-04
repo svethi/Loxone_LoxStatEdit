@@ -362,6 +362,11 @@ namespace LoxStatEdit
             System.Diagnostics.Process.Start("https://github.com/mr-manuel/Loxone_LoxStatEdit");
         }
 
+        private void donateLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.md0.eu/links/loxstatsedit-donate");
+        }
+
         #endregion
 
     }
