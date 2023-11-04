@@ -71,7 +71,7 @@
             // saveButton
             // 
             saveButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            saveButton.Location = new System.Drawing.Point(800, 38);
+            saveButton.Location = new System.Drawing.Point(797, 38);
             saveButton.Name = "saveButton";
             saveButton.Size = new System.Drawing.Size(75, 23);
             saveButton.TabIndex = 7;
@@ -83,7 +83,7 @@
             // loadButton
             // 
             loadButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            loadButton.Location = new System.Drawing.Point(800, 12);
+            loadButton.Location = new System.Drawing.Point(797, 11);
             loadButton.Name = "loadButton";
             loadButton.Size = new System.Drawing.Size(75, 23);
             loadButton.TabIndex = 3;
@@ -95,7 +95,7 @@
             // browseButton
             // 
             browseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            browseButton.Location = new System.Drawing.Point(719, 12);
+            browseButton.Location = new System.Drawing.Point(716, 12);
             browseButton.Name = "browseButton";
             browseButton.Size = new System.Drawing.Size(75, 23);
             browseButton.TabIndex = 2;
@@ -117,7 +117,7 @@
             this._problemButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this._problemButton.Enabled = false;
             this._problemButton.ForeColor = System.Drawing.Color.Red;
-            this._problemButton.Location = new System.Drawing.Point(719, 38);
+            this._problemButton.Location = new System.Drawing.Point(716, 38);
             this._problemButton.Name = "_problemButton";
             this._problemButton.Size = new System.Drawing.Size(75, 23);
             this._problemButton.TabIndex = 6;
@@ -133,7 +133,7 @@
             this._fileInfoTextBox.Location = new System.Drawing.Point(78, 40);
             this._fileInfoTextBox.Name = "_fileInfoTextBox";
             this._fileInfoTextBox.ReadOnly = true;
-            this._fileInfoTextBox.Size = new System.Drawing.Size(635, 20);
+            this._fileInfoTextBox.Size = new System.Drawing.Size(632, 20);
             this._fileInfoTextBox.TabIndex = 5;
             this._fileInfoTextBox.Text = "Enter a file name and press the load button or browse a file";
             // 
@@ -141,17 +141,18 @@
             // 
             this._dataGridView.AllowUserToAddRows = false;
             this._dataGridView.AllowUserToDeleteRows = false;
-            this._dataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
+            this._dataGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this._dataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this._dataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.indexColumn,
             this._timestampColumn,
             this._valueColumn});
-            this._dataGridView.Location = new System.Drawing.Point(15, 66);
+            this._dataGridView.Location = new System.Drawing.Point(12, 66);
             this._dataGridView.Name = "_dataGridView";
             this._dataGridView.RowHeadersWidth = 30;
-            this._dataGridView.Size = new System.Drawing.Size(376, 483);
+            this._dataGridView.Size = new System.Drawing.Size(385, 483);
             this._dataGridView.TabIndex = 8;
             this._dataGridView.VirtualMode = true;
             this._dataGridView.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this._dataGridView_CellContentClick);
@@ -199,7 +200,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this._fileNameTextBox.Location = new System.Drawing.Point(78, 14);
             this._fileNameTextBox.Name = "_fileNameTextBox";
-            this._fileNameTextBox.Size = new System.Drawing.Size(635, 20);
+            this._fileNameTextBox.Size = new System.Drawing.Size(632, 20);
             this._fileNameTextBox.TabIndex = 1;
             // 
             // _chart
@@ -225,7 +226,7 @@
             legend1.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
             legend1.Name = "Legend1";
             this._chart.Legends.Add(legend1);
-            this._chart.Location = new System.Drawing.Point(396, 66);
+            this._chart.Location = new System.Drawing.Point(402, 66);
             this._chart.Margin = new System.Windows.Forms.Padding(2);
             this._chart.Name = "_chart";
             this._chart.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.None;
@@ -239,7 +240,7 @@
             series1.Legend = "Legend1";
             series1.Name = "Series1";
             this._chart.Series.Add(series1);
-            this._chart.Size = new System.Drawing.Size(477, 483);
+            this._chart.Size = new System.Drawing.Size(470, 483);
             this._chart.TabIndex = 9;
             this._chart.Text = "chart1";
             // 
@@ -259,9 +260,11 @@
             this.Controls.Add(this._fileNameTextBox);
             this.Controls.Add(browseButton);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MinimumSize = new System.Drawing.Size(575, 276);
             this.Name = "LoxStatFileForm";
             this.Text = "Loxone Stats Editor - File Editor";
             this.Load += new System.EventHandler(this.MainForm_Load);
+            this.Resize += new System.EventHandler(this.Form_Resize);
             ((System.ComponentModel.ISupportInitialize)(this._dataGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this._chart)).EndInit();
             this.ResumeLayout(false);

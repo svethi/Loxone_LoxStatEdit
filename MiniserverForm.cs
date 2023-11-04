@@ -168,7 +168,8 @@ namespace LoxStatEdit
             _dataGridView.Columns.Add(new DataGridViewTextBoxColumn {
                 DataPropertyName = "Name",
                 HeaderText = "Description",
-                Width = 250
+                MinimumWidth = 250,
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill, 
             });
             _dataGridView.Columns.Add(new DataGridViewTextBoxColumn {
                 DataPropertyName = "YearMonth",

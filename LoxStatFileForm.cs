@@ -233,5 +233,15 @@ namespace LoxStatEdit
                 _dataGridView.Refresh();
             }
         }
+
+        private void Form_Resize(object sender, EventArgs e)
+        {
+            int distance = 5; // Set this to the desired distance between _chart and _dataGridView
+            int availableWidth = this.ClientSize.Width - distance - 23; // window width - distance - padding
+
+            _dataGridView.Width = (int)(availableWidth * 0.45);
+            _chart.Left = _dataGridView.Right + distance;
+            _chart.Width = (int)(availableWidth * 0.55);
+        }
     }
 }
