@@ -76,7 +76,7 @@
             saveButton.Size = new System.Drawing.Size(75, 23);
             saveButton.TabIndex = 7;
             saveButton.Text = "&Save";
-            this.toolTip.SetToolTip(saveButton, "ALT + S");
+            this.toolTip.SetToolTip(saveButton, "Save current statistic file (ALT + S)");
             saveButton.UseVisualStyleBackColor = true;
             saveButton.Click += new System.EventHandler(this.SaveButton_Click);
             // 
@@ -88,7 +88,7 @@
             loadButton.Size = new System.Drawing.Size(75, 23);
             loadButton.TabIndex = 3;
             loadButton.Text = "&Load";
-            this.toolTip.SetToolTip(loadButton, "ALT + L");
+            this.toolTip.SetToolTip(loadButton, "Load selected statistic file (ALT + L)");
             loadButton.UseVisualStyleBackColor = true;
             loadButton.Click += new System.EventHandler(this.LoadButton_Click);
             // 
@@ -100,7 +100,7 @@
             browseButton.Size = new System.Drawing.Size(75, 23);
             browseButton.TabIndex = 2;
             browseButton.Text = "&Browse...";
-            this.toolTip.SetToolTip(browseButton, "ALT + B");
+            this.toolTip.SetToolTip(browseButton, "Browse local statistic files (ALT + B)");
             browseButton.UseVisualStyleBackColor = true;
             browseButton.Click += new System.EventHandler(this.BrowseButton_Click);
             // 
@@ -122,7 +122,7 @@
             this._problemButton.Size = new System.Drawing.Size(75, 23);
             this._problemButton.TabIndex = 6;
             this._problemButton.Text = "&Problems";
-            this.toolTip.SetToolTip(this._problemButton, "ALT + P");
+            this.toolTip.SetToolTip(this._problemButton, "Show recognized problems of current statistic file (ALT + P)");
             this._problemButton.UseVisualStyleBackColor = true;
             this._problemButton.Click += new System.EventHandler(this.ProblemButton_Click);
             // 
@@ -135,7 +135,7 @@
             this._fileInfoTextBox.ReadOnly = true;
             this._fileInfoTextBox.Size = new System.Drawing.Size(635, 20);
             this._fileInfoTextBox.TabIndex = 5;
-            this._fileInfoTextBox.Text = "(Enter or browse a file name end press the Load button)";
+            this._fileInfoTextBox.Text = "Enter a file name and press the load button or browse a file";
             // 
             // _dataGridView
             // 

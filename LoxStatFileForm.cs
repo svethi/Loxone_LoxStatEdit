@@ -30,8 +30,12 @@ namespace LoxStatEdit
             var columns = _dataGridView.Columns;
             while(columns.Count > (_valueColumnOffset + 1))
                 columns.RemoveAt(columns.Count - 1);
-            _fileInfoTextBox.Text = string.Format("{0}: {1} data point(s) á {2} value(s)",
-                _loxStatFile.Text, _loxStatFile.DataPoints.Count, _loxStatFile.ValueCount);
+            _fileInfoTextBox.Text = string.Format("{0}: {1} data point{2} with {3} value{4}",
+                            _loxStatFile.Text, 
+                            _loxStatFile.DataPoints.Count, 
+                            _loxStatFile.DataPoints.Count == 1 ? "" : "s", 
+                            _loxStatFile.ValueCount, 
+                            _loxStatFile.ValueCount == 1 ? "" : "s");
             for(int i = 2; i <= _loxStatFile.ValueCount; i++)
             {
                 var newColumn = (DataGridViewColumn)columns[_valueColumnOffset].Clone();
@@ -99,8 +103,11 @@ namespace LoxStatEdit
         private void BrowseButton_Click(object sender, EventArgs e)
         {
             openFileDialog.FileName = _fileNameTextBox.Text;
+            openFileDialog.InitialDirectory = Path.GetDirectoryName(_fileNameTextBox.Text);
             if (openFileDialog.ShowDialog(this) == DialogResult.OK)
                 _fileNameTextBox.Text = openFileDialog.FileName;
+
+            LoadFile();
         }
 
         private void LoadButton_Click(object sender, EventArgs e)
