@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace LoxStatEdit
@@ -44,6 +44,7 @@ namespace LoxStatEdit
             this._folderTextBox = new System.Windows.Forms.TextBox();
             this._dataGridView = new System.Windows.Forms.DataGridView();
             this._nameCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this._descriptionCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this._yearMonthCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this._statusCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this._downloadCol = new System.Windows.Forms.DataGridViewButtonColumn();
@@ -72,7 +73,7 @@ namespace LoxStatEdit
             // refreshFolderButton
             // 
             refreshFolderButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            refreshFolderButton.Location = new System.Drawing.Point(632, 38);
+            refreshFolderButton.Location = new System.Drawing.Point(882, 38);
             refreshFolderButton.Name = "refreshFolderButton";
             refreshFolderButton.Size = new System.Drawing.Size(75, 23);
             refreshFolderButton.TabIndex = 5;
@@ -84,7 +85,7 @@ namespace LoxStatEdit
             // refreshMsButton
             // 
             refreshMsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            refreshMsButton.Location = new System.Drawing.Point(632, 12);
+            refreshMsButton.Location = new System.Drawing.Point(882, 12);
             refreshMsButton.Name = "refreshMsButton";
             refreshMsButton.Size = new System.Drawing.Size(75, 23);
             refreshMsButton.TabIndex = 2;
@@ -104,7 +105,7 @@ namespace LoxStatEdit
             // downloadButton
             // 
             downloadButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            downloadButton.Location = new System.Drawing.Point(596, 527);
+            downloadButton.Location = new System.Drawing.Point(846, 527);
             downloadButton.Name = "downloadButton";
             downloadButton.Size = new System.Drawing.Size(111, 23);
             downloadButton.TabIndex = 7;
@@ -128,7 +129,7 @@ namespace LoxStatEdit
             | System.Windows.Forms.AnchorStyles.Right)));
             this._urlTextBox.Location = new System.Drawing.Point(100, 14);
             this._urlTextBox.Name = "_urlTextBox";
-            this._urlTextBox.Size = new System.Drawing.Size(526, 20);
+            this._urlTextBox.Size = new System.Drawing.Size(776, 20);
             this._urlTextBox.TabIndex = 1;
             this._urlTextBox.Text = "ftp://adminname:adminpassword@miniserver-ip-or-hostname:21";
             this._urlTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this._urlTextBox_KeyDown);
@@ -139,7 +140,7 @@ namespace LoxStatEdit
             | System.Windows.Forms.AnchorStyles.Right)));
             this._folderTextBox.Location = new System.Drawing.Point(100, 40);
             this._folderTextBox.Name = "_folderTextBox";
-            this._folderTextBox.Size = new System.Drawing.Size(526, 20);
+            this._folderTextBox.Size = new System.Drawing.Size(776, 20);
             this._folderTextBox.TabIndex = 4;
             this._folderTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this._folderTextBox_KeyDown);
             // 
@@ -153,6 +154,7 @@ namespace LoxStatEdit
             this._dataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this._dataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this._nameCol,
+            this._descriptionCol,
             this._yearMonthCol,
             this._statusCol,
             this._downloadCol,
@@ -162,7 +164,7 @@ namespace LoxStatEdit
             this._dataGridView.Name = "_dataGridView";
             this._dataGridView.RowHeadersWidth = 30;
             this._dataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this._dataGridView.Size = new System.Drawing.Size(695, 453);
+            this._dataGridView.Size = new System.Drawing.Size(945, 453);
             this._dataGridView.TabIndex = 6;
             this._dataGridView.VirtualMode = true;
             this._dataGridView.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridView_CellContentClick);
@@ -176,6 +178,15 @@ namespace LoxStatEdit
             this._nameCol.Name = "_nameCol";
             this._nameCol.ReadOnly = true;
             this._nameCol.Width = 250;
+            // 
+            // _descriptionCol
+            // 
+            this._descriptionCol.DataPropertyName = "Description";
+            this._descriptionCol.HeaderText = "Description";
+            this._descriptionCol.MinimumWidth = 8;
+            this._descriptionCol.Name = "_descriptionCol";
+            this._descriptionCol.ReadOnly = true;
+            this._descriptionCol.Width = 250;
             // 
             // _yearMonthCol
             // 
@@ -258,7 +269,7 @@ namespace LoxStatEdit
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(719, 561);
+            this.ClientSize = new System.Drawing.Size(969, 561);
             this.Controls.Add(this.donateLabel);
             this.Controls.Add(aboutLabel);
             this.Controls.Add(this.githubLabel);
@@ -288,6 +299,7 @@ namespace LoxStatEdit
         private LinkLabel githubLabel;
         private ToolTip toolTip;
         private DataGridViewTextBoxColumn _nameCol;
+        private DataGridViewTextBoxColumn _descriptionCol;
         private DataGridViewTextBoxColumn _yearMonthCol;
         private DataGridViewTextBoxColumn _statusCol;
         private DataGridViewButtonColumn _downloadCol;

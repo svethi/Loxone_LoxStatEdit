@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -42,7 +42,8 @@ namespace LoxStatEdit
                             _name = null;
                         }
                         if(string.IsNullOrEmpty(_name))
-                            _name = FileName;
+                            //_name = FileName;
+                            _name = "Download to view description";
                     }
                     return _name;
                 }
@@ -136,7 +137,10 @@ namespace LoxStatEdit
                     MsFileInfo = msMap[f].FirstOrDefault(),
                     FileInfo = localMap[f].FirstOrDefault(),
                 }).
-                OrderBy(f => f).
+                // Order by descriptio
+                //OrderBy(f => f).
+                // Order by filename if available else by name
+                OrderBy(f => f.MsFileInfo?.FileName ?? f.FileInfo?.Name).
                 ToList();
             _dataGridView.RowCount = _fileItems.Count;
             _dataGridView.Refresh();
@@ -299,12 +303,13 @@ namespace LoxStatEdit
                 var fileItem = _fileItems[e.RowIndex];
                 switch(e.ColumnIndex)
                 {
-                    case 0: e.Value = fileItem.Name; break;
-                    case 1: e.Value = fileItem.YearMonth; break;
-                    case 2: e.Value = fileItem.Status; break;
-                    case 3: e.Value = "Download"; break;
-                    case 4: e.Value = "Edit"; break;
-                    case 5: e.Value = "Upload"; break;
+                    case 0: e.Value = fileItem.FileName; break;
+                    case 1: e.Value = fileItem.Name; break;
+                    case 2: e.Value = fileItem.YearMonth; break;
+                    case 3: e.Value = fileItem.Status; break;
+                    case 4: e.Value = "Download"; break;
+                    case 5: e.Value = "Edit"; break;
+                    case 6: e.Value = "Upload"; break;
                     default: e.Value = null; break;
                 }
             }
@@ -323,16 +328,16 @@ namespace LoxStatEdit
             var fileItem = _fileItems[e.RowIndex];
             switch(e.ColumnIndex)
             {
-                case 3: //Download
+                case 4: //Download
                     Download(fileItem);
                     RefreshLocal();
                     RefreshGridView();
                     break;
-                case 4: //Edit
+                case 5: //Edit
                     using(var form = new LoxStatFileForm(fileItem.FileInfo.FullName))
                         form.ShowDialog(this);
                     break;
-                case 5: //Upload
+                case 6: //Upload
                     Upload(fileItem);
                     RefreshMs();
                     RefreshGridView();
