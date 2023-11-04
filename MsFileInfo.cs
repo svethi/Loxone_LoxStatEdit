@@ -76,7 +76,10 @@ namespace LoxStatEdit
                 var response = ex.Response as FtpWebResponse;
                 if (response != null)
                 {
-                    MessageBox.Show($"# Message\n{ex.Message}\n\n# Data\n{ex.Data}\n\n# StackTrace\n{ex.StackTrace}", "Error  - FTP connection", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(ex.Message, "Error  - FTP connection", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    #if DEBUG
+                        Debugger.Break();
+                    #endif
                 }
                 return null;
             }

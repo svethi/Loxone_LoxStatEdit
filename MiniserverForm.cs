@@ -189,7 +189,7 @@ namespace LoxStatEdit
             return uriBuilder.Uri;
         }
 
-        private void Download(FileItem fileItem)
+        private bool Download(FileItem fileItem)
         {
             try
             {
@@ -206,22 +206,27 @@ namespace LoxStatEdit
                 // Log FTP output
                 // File.AppendAllText("./custom.log", $"Downloaded {fileItem.FileName} - Setting last write time to {fileItem.MsFileInfo.Date}\n\n");
 
+                return true;
             }
             catch (WebException ex)
             {
                 var response = ex.Response as FtpWebResponse;
                 if (response != null)
                 {
-                    MessageBox.Show($"# Message\n{ex.Message}\n\n# Data\n{ex.Data}\n\n# StackTrace\n{ex.StackTrace}", "Error  - FTP connection", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(ex.Message, "Error  - FTP connection", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
+
+                return false;
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"# Message\n{ex.Message}\n\n# Data\n{ex.Data}\n\n# StackTrace\n{ex.StackTrace}", "Error - IList", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return false;
             }
         }
 
-        private void Upload(FileItem fileItem)
+        private bool Upload(FileItem fileItem)
         {
             try
             {
@@ -232,18 +237,27 @@ namespace LoxStatEdit
                 using (var ftpStream = ftpWebRequest.GetRequestStream())
                     fileStream.CopyTo(ftpStream);
                 using (var response = ftpWebRequest.GetResponse()) { }
+
+                return true;
             }
             catch (WebException ex)
             {
                 var response = ex.Response as FtpWebResponse;
                 if (response != null)
                 {
-                    MessageBox.Show($"# Message\n{ex.Message}\n\n# Data\n{ex.Data}\n\n# StackTrace\n{ex.StackTrace}", "Error  - FTP connection", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(ex.Message, "Error  - FTP connection", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    #if DEBUG
+                        Debugger.Break();
+                    #endif
                 }
+
+                return false;
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"# Message\n{ex.Message}\n\n# Data\n{ex.Data}\n\n# StackTrace\n{ex.StackTrace}", "Error - IList", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return false;
             }
         }
 
@@ -378,25 +392,54 @@ namespace LoxStatEdit
                     progressBar.Maximum = 1;
                     progressBar.Value = 0;
                     progressLabel.Text = "Starting download...";
-                    Download(fileItem);
-                    progressBar.Value = 1;
-                    progressLabel.Text = "Download complete!";
-                    RefreshLocal();
-                    RefreshGridView();
+                    if(Download(fileItem))
+                    {
+                        progressBar.Value = 1;
+                        progressLabel.Text = "Download complete!";
+                        RefreshLocal();
+                        RefreshGridView();
+                    }
+                    else
+                    {
+                        progressBar.Value = 1;
+                        progressLabel.Text = "Download failed!";
+                    }
                     break;
                 case 5: //Edit
+                    // show error message, if file is not downloaded yet
+                    if (fileItem.FileInfo == null)
+                    {
+                        MessageBox.Show($"The file \"{fileItem.FileName}\" cannot be edited, since it's not available on the filesystem.\n\nPlease download it first.", "Error - File not downloaded", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        break;
+                    }
+
+                    Console.WriteLine(fileItem.FileInfo.FullName);
                     using(var form = new LoxStatFileForm(fileItem.FileInfo.FullName))
                         form.ShowDialog(this);
                     break;
                 case 6: //Upload
+                    // show error message, if there is no file to upload
+                    if (fileItem.FileInfo == null)
+                    {
+                        MessageBox.Show($"The file \"{fileItem.FileName}\" cannot be uploaded, since it's not available on the filesystem.\n\nPlease download it first.", "Error - File not downloaded", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        break;
+                    }
+
                     progressBar.Maximum = 1;
                     progressBar.Value = 0;
                     progressLabel.Text = "Starting upload...";
-                    Upload(fileItem);
-                    progressBar.Value = 1;
-                    progressLabel.Text = "Upload complete!";
-                    RefreshMs();
-                    RefreshGridView();
+                    if(Upload(fileItem))
+                    {
+                        progressBar.Value = 1;
+                        progressLabel.Text = "Upload complete!";
+                        RefreshMs();
+                        RefreshGridView();
+                    }
+                    else
+                    {
+                        progressBar.Value = 1;
+                        progressLabel.Text = "Upload failed!";
+                    }
                     break;
             }
         }
@@ -410,19 +453,22 @@ namespace LoxStatEdit
             foreach(DataGridViewRow row in _dataGridView.SelectedRows)
             {
                 int rowIndex = row.Index; // Capture the index for the closure
-                await Task.Run(() => Download(_fileItems[rowIndex]));
+                bool result = await Task.Run(() => Download(_fileItems[rowIndex]));
+                if (!result)
+                {
+                    progressBar.Value = progressBar.Maximum;
+                    progressLabel.Text = "Download failed!";
+                    return;
+                }
+
                 progressBar.Value++;
                 progressLabel.Text = $"Downloaded {progressBar.Value} of {progressBar.Maximum}";
             }
+
             progressLabel.Text = "Download complete!";
 
             RefreshLocal();
             RefreshGridView();
-
-            // foreach(DataGridViewRow row in _dataGridView.SelectedRows)
-            //     Download(_fileItems[row.Index]);
-            // RefreshLocal();
-            // RefreshGridView();
         }
 
         private async void UploadButton_Click(object sender, EventArgs e)
@@ -434,16 +480,28 @@ namespace LoxStatEdit
             foreach(DataGridViewRow row in _dataGridView.SelectedRows)
             {
                 int rowIndex = row.Index; // Capture the index for the closure
-                await Task.Run(() => Upload(_fileItems[rowIndex]));
+
+                // show error message, if there is no file to upload
+                if (_fileItems[rowIndex].FileInfo == null)
+                {
+                    progressBar.Value = progressBar.Maximum;
+                    progressLabel.Text = "Upload failed!";
+                    MessageBox.Show($"The file \"{_fileItems[rowIndex].FileName}\" cannot be uploaded, since it's not available on the filesystem.\n\nPlease download it first.", "Error - File not downloaded", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                bool result = await Task.Run(() => Upload(_fileItems[rowIndex]));
+                if (!result)
+                {
+                    progressBar.Value = progressBar.Maximum;
+                    progressLabel.Text = "Download failed!";
+                    return;
+                }
+
                 progressBar.Value++;
                 progressLabel.Text = $"Uploaded {progressBar.Value} of {progressBar.Maximum}";
             }
             progressLabel.Text = "Upload complete!";
-
-            // foreach(DataGridViewRow row in _dataGridView.SelectedRows)
-            //     Upload(_fileItems[row.Index]);
-            // RefreshMs();
-            // RefreshGridView();
         }
 
         // Launch project link
