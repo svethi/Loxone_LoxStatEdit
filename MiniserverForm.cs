@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -297,6 +297,51 @@ namespace LoxStatEdit
             RefreshGridView();
         }
 
+        private void DataGridView_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (e.ColumnIndex == 1) // The Name column is at index 1
+            {
+                var fileItem = _fileItems[e.RowIndex];
+                if (fileItem.Name == "Download to view description")
+                {
+                    e.CellStyle.Font = new System.Drawing.Font(e.CellStyle.Font, System.Drawing.FontStyle.Italic);
+                }
+                else
+                {
+                    e.CellStyle.Font = new System.Drawing.Font(e.CellStyle.Font, System.Drawing.FontStyle.Regular);
+                }
+            }
+            if (e.ColumnIndex == 3) // The Status column is at index 3
+            {
+                var fileItem = _fileItems[e.RowIndex];
+                switch (fileItem.Status)
+                {
+                    case "Only on MS":
+                        e.CellStyle.BackColor = System.Drawing.Color.LightGray;
+                        break;
+                    case "Only on FS":
+                        e.CellStyle.BackColor = System.Drawing.Color.LightGoldenrodYellow;
+                        break;
+                    case "Newer on MS":
+                        e.CellStyle.BackColor = System.Drawing.Color.LightGreen;
+                        break;
+                    case "Newer on FS":
+                        e.CellStyle.BackColor = System.Drawing.Color.LightSkyBlue;
+                        break;
+                    case "Larger on MS":
+                        e.CellStyle.BackColor = System.Drawing.Color.LightGreen;
+                        break;
+                    case "Larger on FS":
+                        e.CellStyle.BackColor = System.Drawing.Color.LightSkyBlue;
+                        break;
+                    default:
+                        e.CellStyle.BackColor = System.Drawing.Color.White;
+                        break;
+                }
+            }
+
+        }
+        
         private void DataGridView_CellValueNeeded(object sender, DataGridViewCellValueEventArgs e)
         {
             try
