@@ -39,6 +39,8 @@ namespace LoxStatEdit
             System.Windows.Forms.Button downloadButton;
             System.Windows.Forms.Button uploadButton;
             System.Windows.Forms.Label aboutLabel;
+            System.Windows.Forms.Button openFolderButton;
+            System.Windows.Forms.Button browseFolderButton;
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MiniserverForm));
             this._urlTextBox = new System.Windows.Forms.TextBox();
@@ -56,6 +58,7 @@ namespace LoxStatEdit
             this.donateLabel = new System.Windows.Forms.LinkLabel();
             this.progressBar = new System.Windows.Forms.ProgressBar();
             this.progressLabel = new System.Windows.Forms.Label();
+            this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             urlLabel = new System.Windows.Forms.Label();
             refreshFolderButton = new System.Windows.Forms.Button();
             refreshMsButton = new System.Windows.Forms.Button();
@@ -63,6 +66,8 @@ namespace LoxStatEdit
             downloadButton = new System.Windows.Forms.Button();
             uploadButton = new System.Windows.Forms.Button();
             aboutLabel = new System.Windows.Forms.Label();
+            openFolderButton = new System.Windows.Forms.Button();
+            browseFolderButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this._dataGridView)).BeginInit();
             this.SuspendLayout();
             // 
@@ -70,7 +75,7 @@ namespace LoxStatEdit
             // 
             urlLabel.Location = new System.Drawing.Point(12, 17);
             urlLabel.Name = "urlLabel";
-            urlLabel.Size = new System.Drawing.Size(82, 18);
+            urlLabel.Size = new System.Drawing.Size(63, 18);
             urlLabel.TabIndex = 0;
             urlLabel.Text = "Miniserver:";
             // 
@@ -80,9 +85,9 @@ namespace LoxStatEdit
             refreshFolderButton.Location = new System.Drawing.Point(882, 38);
             refreshFolderButton.Name = "refreshFolderButton";
             refreshFolderButton.Size = new System.Drawing.Size(75, 23);
-            refreshFolderButton.TabIndex = 5;
+            refreshFolderButton.TabIndex = 7;
             refreshFolderButton.Text = "Refresh &FS";
-            this.toolTip.SetToolTip(refreshFolderButton, "ALT + F");
+            this.toolTip.SetToolTip(refreshFolderButton, "Refresh Computer files (ALT + F)");
             refreshFolderButton.UseVisualStyleBackColor = true;
             refreshFolderButton.Click += new System.EventHandler(this.RefreshFolderButton_Click);
             // 
@@ -94,7 +99,7 @@ namespace LoxStatEdit
             refreshMsButton.Size = new System.Drawing.Size(75, 23);
             refreshMsButton.TabIndex = 2;
             refreshMsButton.Text = "Refresh &MS";
-            this.toolTip.SetToolTip(refreshMsButton, "ALT + M");
+            this.toolTip.SetToolTip(refreshMsButton, "Refresh Miniserver files (ALT + M)");
             refreshMsButton.UseVisualStyleBackColor = true;
             refreshMsButton.Click += new System.EventHandler(this.RefreshMsButton_Click);
             // 
@@ -102,9 +107,9 @@ namespace LoxStatEdit
             // 
             folderLabel.Location = new System.Drawing.Point(12, 43);
             folderLabel.Name = "folderLabel";
-            folderLabel.Size = new System.Drawing.Size(82, 18);
+            folderLabel.Size = new System.Drawing.Size(63, 18);
             folderLabel.TabIndex = 3;
-            folderLabel.Text = "Working Folder:";
+            folderLabel.Text = "Computer:";
             // 
             // downloadButton
             // 
@@ -112,9 +117,9 @@ namespace LoxStatEdit
             downloadButton.Location = new System.Drawing.Point(729, 527);
             downloadButton.Name = "downloadButton";
             downloadButton.Size = new System.Drawing.Size(111, 23);
-            downloadButton.TabIndex = 7;
+            downloadButton.TabIndex = 9;
             downloadButton.Text = "&Download selected";
-            this.toolTip.SetToolTip(downloadButton, "ALT + D");
+            this.toolTip.SetToolTip(downloadButton, "Download selected statistic files (ALT + D)");
             downloadButton.UseVisualStyleBackColor = true;
             downloadButton.Click += new System.EventHandler(this.DownloadButton_Click);
             // 
@@ -124,9 +129,9 @@ namespace LoxStatEdit
             uploadButton.Location = new System.Drawing.Point(846, 527);
             uploadButton.Name = "uploadButton";
             uploadButton.Size = new System.Drawing.Size(111, 23);
-            uploadButton.TabIndex = 13;
+            uploadButton.TabIndex = 10;
             uploadButton.Text = "&Upload selected";
-            this.toolTip.SetToolTip(uploadButton, "ALT + U");
+            this.toolTip.SetToolTip(uploadButton, "Upload selected statistic files (ALT + U)");
             uploadButton.UseVisualStyleBackColor = true;
             uploadButton.Click += new System.EventHandler(this.UploadButton_Click);
             // 
@@ -136,28 +141,54 @@ namespace LoxStatEdit
             aboutLabel.Location = new System.Drawing.Point(12, 532);
             aboutLabel.Name = "aboutLabel";
             aboutLabel.Size = new System.Drawing.Size(171, 18);
-            aboutLabel.TabIndex = 8;
+            aboutLabel.TabIndex = 100;
             aboutLabel.Text = "LoxStatEdit v1.0.3.0 (2023.11.02)";
+            // 
+            // openFolderButton
+            // 
+            openFolderButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            openFolderButton.Location = new System.Drawing.Point(801, 38);
+            openFolderButton.Name = "openFolderButton";
+            openFolderButton.Size = new System.Drawing.Size(75, 23);
+            openFolderButton.TabIndex = 6;
+            openFolderButton.Text = "&Open";
+            this.toolTip.SetToolTip(openFolderButton, "Open folder in Windows Explorer (ALT + O)");
+            openFolderButton.UseVisualStyleBackColor = true;
+            openFolderButton.Click += new System.EventHandler(this.openFolderButton_Click);
+            // 
+            // browseFolderButton
+            // 
+            browseFolderButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            browseFolderButton.Location = new System.Drawing.Point(720, 38);
+            browseFolderButton.Name = "browseFolderButton";
+            browseFolderButton.Size = new System.Drawing.Size(75, 23);
+            browseFolderButton.TabIndex = 5;
+            browseFolderButton.Text = "&Browse...";
+            this.toolTip.SetToolTip(browseFolderButton, "Browse folders (ALT + B)");
+            browseFolderButton.UseVisualStyleBackColor = true;
+            browseFolderButton.Click += new System.EventHandler(this.BrowseFolderButton_Click);
             // 
             // _urlTextBox
             // 
             this._urlTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this._urlTextBox.Location = new System.Drawing.Point(100, 14);
+            this._urlTextBox.Location = new System.Drawing.Point(81, 14);
             this._urlTextBox.Name = "_urlTextBox";
-            this._urlTextBox.Size = new System.Drawing.Size(776, 20);
+            this._urlTextBox.Size = new System.Drawing.Size(795, 20);
             this._urlTextBox.TabIndex = 1;
             this._urlTextBox.Text = "ftp://adminname:adminpassword@miniserver-ip-or-hostname:21";
+            this.toolTip.SetToolTip(this._urlTextBox, "Miniserver connection details");
             this._urlTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this._urlTextBox_KeyDown);
             // 
             // _folderTextBox
             // 
             this._folderTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this._folderTextBox.Location = new System.Drawing.Point(100, 40);
+            this._folderTextBox.Location = new System.Drawing.Point(81, 40);
             this._folderTextBox.Name = "_folderTextBox";
-            this._folderTextBox.Size = new System.Drawing.Size(776, 20);
+            this._folderTextBox.Size = new System.Drawing.Size(633, 20);
             this._folderTextBox.TabIndex = 4;
+            this.toolTip.SetToolTip(this._folderTextBox, "Path to folder on this computer where statistic files are saved");
             this._folderTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this._folderTextBox_KeyDown);
             // 
             // _dataGridView
@@ -181,7 +212,7 @@ namespace LoxStatEdit
             this._dataGridView.RowHeadersWidth = 30;
             this._dataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this._dataGridView.Size = new System.Drawing.Size(945, 453);
-            this._dataGridView.TabIndex = 6;
+            this._dataGridView.TabIndex = 8;
             this._dataGridView.VirtualMode = true;
             this._dataGridView.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridView_CellContentClick);
             this._dataGridView.CellValueNeeded += new System.Windows.Forms.DataGridViewCellValueEventHandler(this.DataGridView_CellValueNeeded);
@@ -214,7 +245,7 @@ namespace LoxStatEdit
             this._yearMonthCol.MinimumWidth = 8;
             this._yearMonthCol.Name = "_yearMonthCol";
             this._yearMonthCol.ReadOnly = true;
-            this._yearMonthCol.Width = 71;
+            this._yearMonthCol.Width = 90;
             // 
             // _statusCol
             // 
@@ -223,7 +254,7 @@ namespace LoxStatEdit
             this._statusCol.MinimumWidth = 8;
             this._statusCol.Name = "_statusCol";
             this._statusCol.ReadOnly = true;
-            this._statusCol.Width = 150;
+            this._statusCol.Width = 100;
             // 
             // _downloadCol
             // 
@@ -261,7 +292,7 @@ namespace LoxStatEdit
             this.githubLabel.Location = new System.Drawing.Point(184, 533);
             this.githubLabel.Name = "githubLabel";
             this.githubLabel.Size = new System.Drawing.Size(42, 18);
-            this.githubLabel.TabIndex = 9;
+            this.githubLabel.TabIndex = 101;
             this.githubLabel.TabStop = true;
             this.githubLabel.Text = "GitHub";
             this.githubLabel.UseCompatibleTextRendering = true;
@@ -276,7 +307,7 @@ namespace LoxStatEdit
             this.donateLabel.Location = new System.Drawing.Point(232, 533);
             this.donateLabel.Name = "donateLabel";
             this.donateLabel.Size = new System.Drawing.Size(96, 18);
-            this.donateLabel.TabIndex = 10;
+            this.donateLabel.TabIndex = 102;
             this.donateLabel.TabStop = true;
             this.donateLabel.Text = "Donate && Support";
             this.donateLabel.UseCompatibleTextRendering = true;
@@ -288,7 +319,7 @@ namespace LoxStatEdit
             this.progressBar.Location = new System.Drawing.Point(563, 527);
             this.progressBar.Name = "progressBar";
             this.progressBar.Size = new System.Drawing.Size(160, 23);
-            this.progressBar.TabIndex = 11;
+            this.progressBar.TabIndex = 103;
             // 
             // progressLabel
             // 
@@ -298,7 +329,7 @@ namespace LoxStatEdit
             this.progressLabel.Location = new System.Drawing.Point(568, 532);
             this.progressLabel.Name = "progressLabel";
             this.progressLabel.Size = new System.Drawing.Size(24, 13);
-            this.progressLabel.TabIndex = 12;
+            this.progressLabel.TabIndex = 104;
             this.progressLabel.Text = "Idle";
             this.progressLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
@@ -307,6 +338,8 @@ namespace LoxStatEdit
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(969, 561);
+            this.Controls.Add(browseFolderButton);
+            this.Controls.Add(openFolderButton);
             this.Controls.Add(this.progressLabel);
             this.Controls.Add(this.progressBar);
             this.Controls.Add(this.donateLabel);
@@ -348,5 +381,6 @@ namespace LoxStatEdit
         private DataGridViewButtonColumn _uploadCol;
         private ProgressBar progressBar;
         private Label progressLabel;
+        private FolderBrowserDialog folderBrowserDialog;
     }
 }

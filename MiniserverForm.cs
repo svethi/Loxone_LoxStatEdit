@@ -216,6 +216,21 @@ namespace LoxStatEdit
                 Select(fileName => new FileInfo(fileName)).ToList();
         }
 
+        private void BrowseFolderButton_Click(object sender, EventArgs e)
+        {
+            folderBrowserDialog.SelectedPath = _folderTextBox.Text;
+            if (folderBrowserDialog.ShowDialog(this) == DialogResult.OK)
+                _folderTextBox.Text = folderBrowserDialog.SelectedPath;
+            RefreshLocal();
+            RefreshGridView();
+            Console.WriteLine("Refreshed local folder");
+        }
+
+        private void openFolderButton_Click(object sender, EventArgs e)
+        {
+            Process.Start("explorer.exe", _folderTextBox.Text);
+        }
+
         private UriBuilder GetMsUriBuilder()
         {
             try
