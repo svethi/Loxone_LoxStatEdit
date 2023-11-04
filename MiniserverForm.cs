@@ -485,6 +485,8 @@ namespace LoxStatEdit
                     Console.WriteLine(fileItem.FileInfo.FullName);
                     using(var form = new LoxStatFileForm(fileItem.FileInfo.FullName))
                         form.ShowDialog(this);
+                    RefreshLocal();
+                    RefreshGridView();
                     break;
                 case 6: //Upload
                     // show error message, if there is no file to upload
