@@ -142,7 +142,7 @@ namespace LoxStatEdit
             aboutLabel.Name = "aboutLabel";
             aboutLabel.Size = new System.Drawing.Size(171, 18);
             aboutLabel.TabIndex = 100;
-            aboutLabel.Text = "LoxStatEdit v1.0.3.0 (2023.11.02)";
+            aboutLabel.Text = "LoxStatEdit v1.0.4.0 (2023.11.03)";
             // 
             // openFolderButton
             // 

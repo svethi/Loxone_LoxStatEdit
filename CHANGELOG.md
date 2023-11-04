@@ -1,5 +1,24 @@
 # Changelog
 
+## v1.0.4.0
+
+* Added: Allow user to sort by selected column
+* Added: Browse button to browse local folders
+* Added: Description column
+* Added: Donation link
+* Added: File Editor: Automatically load file when selected with the file browser
+* Added: File Editor: Open current file folder when pressing browse
+* Added: Many tooltip descriptions
+* Added: More error handling and messages
+* Added: Open button to open local folder in Windows Explorer
+* Added: Progress bar for download/upload actions
+* Added: Refresh automatically local file list after closing the File Editor
+* Added: Some styling for better UX: Gray = Only on MS; Beige = Only on FS; Green = Newer/Larger on MS; Blue = Newer/Larger on FS
+* Added: Upload selected button
+* Changed: Name column now shows always the filename
+* Changed: Small design fixes to increase responsiveness
+* Changed: Sort columns by filename and not by name
+
 ## v1.0.3.0
 
 * Changed: Fixed Win32-FileTime error
