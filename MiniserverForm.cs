@@ -457,6 +457,7 @@ namespace LoxStatEdit
                 case 4: //Download
                     progressBar.Maximum = 1;
                     progressBar.Value = 0;
+                    progressBar.SetState(1);
                     progressLabel.Text = "Starting download...";
                     if(Download(fileItem))
                     {
@@ -468,6 +469,7 @@ namespace LoxStatEdit
                     else
                     {
                         progressBar.Value = 1;
+                        progressBar.SetState(2);
                         progressLabel.Text = "Download failed!";
                     }
                     break;
@@ -493,6 +495,7 @@ namespace LoxStatEdit
 
                     progressBar.Maximum = 1;
                     progressBar.Value = 0;
+                    progressBar.SetState(1);
                     progressLabel.Text = "Starting upload...";
                     if(Upload(fileItem))
                     {
@@ -504,6 +507,7 @@ namespace LoxStatEdit
                     else
                     {
                         progressBar.Value = 1;
+                        progressBar.SetState(2);
                         progressLabel.Text = "Upload failed!";
                     }
                     break;
@@ -514,6 +518,7 @@ namespace LoxStatEdit
         {
             progressBar.Maximum = _dataGridView.SelectedRows.Count;
             progressBar.Value = 0;
+            progressBar.SetState(1);
             progressLabel.Text = "Starting download...";
 
             foreach(DataGridViewRow row in _dataGridView.SelectedRows)
@@ -523,6 +528,7 @@ namespace LoxStatEdit
                 if (!result)
                 {
                     progressBar.Value = progressBar.Maximum;
+                    progressBar.SetState(2);
                     progressLabel.Text = "Download failed!";
                     return;
                 }
@@ -541,6 +547,7 @@ namespace LoxStatEdit
         {
             progressBar.Maximum = _dataGridView.SelectedRows.Count;
             progressBar.Value = 0;
+            progressBar.SetState(1);
             progressLabel.Text = "Starting upload...";
 
             foreach(DataGridViewRow row in _dataGridView.SelectedRows)
@@ -560,6 +567,7 @@ namespace LoxStatEdit
                 if (!result)
                 {
                     progressBar.Value = progressBar.Maximum;
+                    progressBar.SetState(2);
                     progressLabel.Text = "Download failed!";
                     return;
                 }

@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MofifyProgressBarColor.cs" />
     <Compile Include="MsFileInfo.cs" />
     <Compile Include="LoxStatDataPoint.cs" />
     <Compile Include="LoxStatFile.cs" />
