@@ -37,6 +37,7 @@ namespace LoxStatEdit
             System.Windows.Forms.Button refreshMsButton;
             System.Windows.Forms.Label folderLabel;
             System.Windows.Forms.Button downloadButton;
+            System.Windows.Forms.Button uploadButton;
             System.Windows.Forms.Label aboutLabel;
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MiniserverForm));
@@ -53,11 +54,14 @@ namespace LoxStatEdit
             this.githubLabel = new System.Windows.Forms.LinkLabel();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.donateLabel = new System.Windows.Forms.LinkLabel();
+            this.progressBar = new System.Windows.Forms.ProgressBar();
+            this.progressLabel = new System.Windows.Forms.Label();
             urlLabel = new System.Windows.Forms.Label();
             refreshFolderButton = new System.Windows.Forms.Button();
             refreshMsButton = new System.Windows.Forms.Button();
             folderLabel = new System.Windows.Forms.Label();
             downloadButton = new System.Windows.Forms.Button();
+            uploadButton = new System.Windows.Forms.Button();
             aboutLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this._dataGridView)).BeginInit();
             this.SuspendLayout();
@@ -105,7 +109,7 @@ namespace LoxStatEdit
             // downloadButton
             // 
             downloadButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            downloadButton.Location = new System.Drawing.Point(846, 527);
+            downloadButton.Location = new System.Drawing.Point(729, 527);
             downloadButton.Name = "downloadButton";
             downloadButton.Size = new System.Drawing.Size(111, 23);
             downloadButton.TabIndex = 7;
@@ -113,6 +117,18 @@ namespace LoxStatEdit
             this.toolTip.SetToolTip(downloadButton, "ALT + D");
             downloadButton.UseVisualStyleBackColor = true;
             downloadButton.Click += new System.EventHandler(this.DownloadButton_Click);
+            // 
+            // uploadButton
+            // 
+            uploadButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            uploadButton.Location = new System.Drawing.Point(846, 527);
+            uploadButton.Name = "uploadButton";
+            uploadButton.Size = new System.Drawing.Size(111, 23);
+            uploadButton.TabIndex = 13;
+            uploadButton.Text = "&Upload selected";
+            this.toolTip.SetToolTip(uploadButton, "ALT + U");
+            uploadButton.UseVisualStyleBackColor = true;
+            uploadButton.Click += new System.EventHandler(this.UploadButton_Click);
             // 
             // aboutLabel
             // 
@@ -265,14 +281,36 @@ namespace LoxStatEdit
             this.donateLabel.UseCompatibleTextRendering = true;
             this.donateLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.donateLabel_LinkClicked);
             // 
+            // progressBar
+            // 
+            this.progressBar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.progressBar.Location = new System.Drawing.Point(563, 527);
+            this.progressBar.Name = "progressBar";
+            this.progressBar.Size = new System.Drawing.Size(160, 23);
+            this.progressBar.TabIndex = 11;
+            // 
+            // progressLabel
+            // 
+            this.progressLabel.AutoSize = true;
+            this.progressLabel.BackColor = System.Drawing.Color.Transparent;
+            this.progressLabel.Location = new System.Drawing.Point(568, 532);
+            this.progressLabel.Name = "progressLabel";
+            this.progressLabel.Size = new System.Drawing.Size(24, 13);
+            this.progressLabel.TabIndex = 12;
+            this.progressLabel.Text = "Idle";
+            this.progressLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            // 
             // MiniserverForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(969, 561);
+            this.Controls.Add(this.progressLabel);
+            this.Controls.Add(this.progressBar);
             this.Controls.Add(this.donateLabel);
             this.Controls.Add(aboutLabel);
             this.Controls.Add(this.githubLabel);
+            this.Controls.Add(uploadButton);
             this.Controls.Add(downloadButton);
             this.Controls.Add(this._dataGridView);
             this.Controls.Add(this._folderTextBox);
@@ -298,6 +336,7 @@ namespace LoxStatEdit
         private System.Windows.Forms.DataGridView _dataGridView;
         private LinkLabel githubLabel;
         private ToolTip toolTip;
+        private LinkLabel donateLabel;
         private DataGridViewTextBoxColumn _nameCol;
         private DataGridViewTextBoxColumn _descriptionCol;
         private DataGridViewTextBoxColumn _yearMonthCol;
@@ -305,6 +344,7 @@ namespace LoxStatEdit
         private DataGridViewButtonColumn _downloadCol;
         private DataGridViewButtonColumn _editCol;
         private DataGridViewButtonColumn _uploadCol;
-        private LinkLabel donateLabel;
+        private ProgressBar progressBar;
+        private Label progressLabel;
     }
 }

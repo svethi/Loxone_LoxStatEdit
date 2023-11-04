@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace LoxStatEdit
@@ -329,7 +330,12 @@ namespace LoxStatEdit
             switch(e.ColumnIndex)
             {
                 case 4: //Download
+                    progressBar.Maximum = 1;
+                    progressBar.Value = 0;
+                    progressLabel.Text = "Starting download...";
                     Download(fileItem);
+                    progressBar.Value = 1;
+                    progressLabel.Text = "Download complete!";
                     RefreshLocal();
                     RefreshGridView();
                     break;
@@ -338,27 +344,61 @@ namespace LoxStatEdit
                         form.ShowDialog(this);
                     break;
                 case 6: //Upload
+                    progressBar.Maximum = 1;
+                    progressBar.Value = 0;
+                    progressLabel.Text = "Starting upload...";
                     Upload(fileItem);
+                    progressBar.Value = 1;
+                    progressLabel.Text = "Upload complete!";
                     RefreshMs();
                     RefreshGridView();
                     break;
             }
         }
 
-        private void DownloadButton_Click(object sender, EventArgs e)
+        private async void DownloadButton_Click(object sender, EventArgs e)
         {
+            progressBar.Maximum = _dataGridView.SelectedRows.Count;
+            progressBar.Value = 0;
+            progressLabel.Text = "Starting download...";
+
             foreach(DataGridViewRow row in _dataGridView.SelectedRows)
-                Download(_fileItems[row.Index]);
+            {
+                int rowIndex = row.Index; // Capture the index for the closure
+                await Task.Run(() => Download(_fileItems[rowIndex]));
+                progressBar.Value++;
+                progressLabel.Text = $"Downloaded {progressBar.Value} of {progressBar.Maximum}";
+            }
+            progressLabel.Text = "Download complete!";
+
             RefreshLocal();
             RefreshGridView();
+
+            // foreach(DataGridViewRow row in _dataGridView.SelectedRows)
+            //     Download(_fileItems[row.Index]);
+            // RefreshLocal();
+            // RefreshGridView();
         }
 
-        private void UploadButton_Click(object sender, EventArgs e)
+        private async void UploadButton_Click(object sender, EventArgs e)
         {
+            progressBar.Maximum = _dataGridView.SelectedRows.Count;
+            progressBar.Value = 0;
+            progressLabel.Text = "Starting upload...";
+
             foreach(DataGridViewRow row in _dataGridView.SelectedRows)
-                Upload(_fileItems[row.Index]);
-            RefreshMs();
-            RefreshGridView();
+            {
+                int rowIndex = row.Index; // Capture the index for the closure
+                await Task.Run(() => Upload(_fileItems[rowIndex]));
+                progressBar.Value++;
+                progressLabel.Text = $"Uploaded {progressBar.Value} of {progressBar.Maximum}";
+            }
+            progressLabel.Text = "Upload complete!";
+
+            // foreach(DataGridViewRow row in _dataGridView.SelectedRows)
+            //     Upload(_fileItems[row.Index]);
+            // RefreshMs();
+            // RefreshGridView();
         }
 
         // Launch project link
