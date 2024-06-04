@@ -13,7 +13,7 @@ namespace LoxStatEdit
         public LoxStatFile LoxStatFile { get; private set; }
         /// <summary>The index of the data point within the file
         /// </summary>
-        public int Index { get; private set; }
+        public int Index { get; set; }
         /// <summary>Part 1 of the loxone object uuid (nnnnnnnn-nnnn-XXXX-nnnn-nnnnnnnnnnnn)
         /// </summary>
         public ushort ObjectUidPart1 { get; set; }
