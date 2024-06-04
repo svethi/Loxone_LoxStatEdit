@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
+using System.Text.RegularExpressions;
 
 namespace LoxStatEdit
 {
@@ -138,11 +139,188 @@ namespace LoxStatEdit
             var dataPoint = _loxStatFile.DataPoints[e.RowIndex];
             if(columnIndex == 1)
                 dataPoint.Timestamp = Convert.ToDateTime(e.Value);
-            else
+            else if(columnIndex > 1)
                 dataPoint.Values[columnIndex - _valueColumnOffset] =
                     Convert.ToDouble(e.Value.ToString());
             RefreshProblems();
             RefreshChart();
+        }
+
+        private void DataGridView_MouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                ContextMenu m = new ContextMenu();
+                m.MenuItems.Add(new MenuItem("delete selected entries", mnuDeleteSelected_Click));
+                m.MenuItems.Add(new MenuItem("insert entry", mnuInsertEntry_Click));
+                m.MenuItems.Add(new MenuItem("Calc from row", mnuCalcfrom_Click));
+                m.MenuItems.Add(new MenuItem("Calc selected", mnuCalcSelected_Click));
+                //m.MenuItems[0].Enabled = false;
+                //m.MenuItems[1].Enabled = false;
+
+                if (_dataGridView.SelectedRows.Count < 1)
+                {
+                    m.MenuItems[0].Enabled = false;
+                    m.MenuItems[1].Enabled = false;
+                    m.MenuItems[2].Enabled = false;
+                    m.MenuItems[3].Enabled = false;
+                }
+
+                if (_dataGridView.SelectedRows.Count < 2)
+                {
+                    //m.MenuItems[0].Enabled = false;
+                    m.MenuItems[3].Enabled = false;
+                }
+                int currentMouseOverRow = e.RowIndex;
+
+                m.Show(_dataGridView, new Point(e.Location.X, e.Location.Y));
+
+            }
+        }
+
+        private void mnuCalcfrom_Click(object sender, EventArgs e)
+        {
+            string chrDec = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
+            string chrGrp = CultureInfo.CurrentCulture.NumberFormat.NumberGroupSeparator;
+            string input = "V - 100";
+            string pattern = "V";
+            string replacement = "1";
+            double myValue;
+            string formula = "";
+            bool isFormula = true;
+
+            ShowInputDialog(ref input);
+
+            if (chrDec == ",")
+            {
+                input = Regex.Replace(input, "/.", "");
+                input = Regex.Replace(input, chrDec, chrGrp);
+            }
+
+            formula = Regex.Replace(input, pattern, replacement);
+            try
+            {
+                myValue = Convert.ToDouble(new System.Data.DataTable().Compute(formula, null));
+            } catch (System.Data.DataException de)
+            {
+                MessageBox.Show(de.Message);
+                isFormula = false;
+            }
+            
+
+            if (isFormula) {
+                for (int x = _dataGridView.SelectedRows[0].Cells[0].RowIndex; x < _dataGridView.Rows.Count; x++)
+                {
+                    replacement = Convert.ToDouble(_dataGridView.Rows[x].Cells[2].Value).ToString("#.###", CultureInfo.CreateSpecificCulture("en-EN"));
+                    formula = Regex.Replace(input, pattern, replacement);
+                    try
+                    {
+                        myValue = Convert.ToDouble(new System.Data.DataTable().Compute(formula, null));
+                    } catch (System.Data.DataException re)
+                    {
+                        myValue = Convert.ToDouble(replacement);
+                    }
+
+                    _dataGridView.Rows[x].Cells[2].Value = myValue.ToString();
+                }
+            }
+
+        }
+
+        private void mnuCalcSelected_Click(object sender, EventArgs e)
+        {
+            string input = "0";
+            double myValue;
+            ShowInputDialog(ref input);
+            if (Double.TryParse(input, out myValue))
+            {
+                foreach (DataGridViewRow myRow in _dataGridView.SelectedRows)
+                {
+                    myRow.Cells[2].Value = (Convert.ToDouble(myRow.Cells[2].Value.ToString()) + Convert.ToDouble(input)).ToString();
+                }
+            }
+
+
+        }
+
+        private void mnuDeleteSelected_Click(object sender, EventArgs e)
+        {
+            int rowIndex = _dataGridView.SelectedRows[0].Index;
+            //_loxStatFile.DataPoints.RemoveAt(rowIndex);
+            for (int x = _dataGridView.SelectedRows.Count -1; x >= 0; x--)
+            {
+                _loxStatFile.DataPoints.RemoveAt(_dataGridView.SelectedRows[x].Index);
+                _dataGridView.Rows.RemoveAt(_dataGridView.SelectedRows[x].Index);
+            }
+            //_dataGridView.Rows.Remove(_dataGridView.SelectedRows[0]);
+            int rowCount = _dataGridView.RowCount;
+            for (int x = rowIndex; x < rowCount; x++)
+            {
+                if (x == 0)
+                {
+                    _loxStatFile.DataPoints[x].Index = 0;
+                    _dataGridView.Rows[x].Cells[0].Value = 0;
+                }
+                else
+                {
+                    _loxStatFile.DataPoints[x].Index = _loxStatFile.DataPoints[x - 1].Index + 1;
+                    _dataGridView.Rows[x].Cells[0].Value = ((int)_dataGridView.Rows[x - 1].Cells[0].Value + 1).ToString();
+                }
+            }
+            RefreshProblems();
+            RefreshChart();
+        }
+
+        private void mnuInsertEntry_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private static DialogResult ShowInputDialog(ref string input)
+        {
+            System.Drawing.Size size = new System.Drawing.Size(250, 130);
+            Form inputBox = new Form();
+
+            inputBox.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            inputBox.ClientSize = size;
+            inputBox.Text = "Name";
+
+            System.Windows.Forms.TextBox textBox = new TextBox();
+            textBox.Size = new System.Drawing.Size(size.Width - 20, 23);
+            textBox.Location = new System.Drawing.Point(10, 10);
+            textBox.Text = input;
+            inputBox.Controls.Add(textBox);
+
+            Label lblInfo = new Label();
+            lblInfo.Size = new Size(size.Width - 30, 60);
+            lblInfo.Location = new Point(15, 37);
+            lblInfo.Text = "type in a math formula including +,-,*,/. " +
+                "Use V for the original value." +
+                "Like: v - 100";
+            inputBox.Controls.Add(lblInfo);
+
+            Button okButton = new Button();
+            okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
+            okButton.Name = "okButton";
+            okButton.Size = new System.Drawing.Size(75, 23);
+            okButton.Text = "&OK";
+            okButton.Location = new System.Drawing.Point(size.Width - 80 - 80, 99);
+            inputBox.Controls.Add(okButton);
+
+            Button cancelButton = new Button();
+            cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            cancelButton.Name = "cancelButton";
+            cancelButton.Size = new System.Drawing.Size(75, 23);
+            cancelButton.Text = "&Cancel";
+            cancelButton.Location = new System.Drawing.Point(size.Width - 80, 99);
+            inputBox.Controls.Add(cancelButton);
+
+            inputBox.AcceptButton = okButton;
+            inputBox.CancelButton = cancelButton;
+
+            DialogResult result = inputBox.ShowDialog();
+            input = textBox.Text;
+            return result;
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -243,5 +421,7 @@ namespace LoxStatEdit
             _chart.Left = _dataGridView.Right + distance;
             _chart.Width = (int)(availableWidth * 0.55);
         }
+
+     
     }
 }

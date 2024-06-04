@@ -156,6 +156,7 @@
             this._dataGridView.TabIndex = 8;
             this._dataGridView.VirtualMode = true;
             this._dataGridView.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this._dataGridView_CellContentClick);
+            this._dataGridView.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.DataGridView_MouseClick);
             this._dataGridView.CellValueNeeded += new System.Windows.Forms.DataGridViewCellValueEventHandler(this.DataGridView_CellValueNeeded);
             this._dataGridView.CellValuePushed += new System.Windows.Forms.DataGridViewCellValueEventHandler(this.DataGridView_CellValuePushed);
             this._dataGridView.KeyDown += new System.Windows.Forms.KeyEventHandler(this._dataGridView_KeyDown);
