@@ -13,6 +13,7 @@ namespace LoxStatEdit
     public partial class LoxStatFileForm: Form
     {
         const int _valueColumnOffset = 2;
+        bool _inProgress;
         readonly string[] _args;
         LoxStatFile _loxStatFile;
         IList<LoxStatProblem> _problems;
@@ -118,6 +119,7 @@ namespace LoxStatEdit
 
         private void DataGridView_CellValueNeeded(object sender, DataGridViewCellValueEventArgs e)
         {
+            if (_inProgress) return;
             try
             {
                 var rowIndex = e.RowIndex;
@@ -153,6 +155,7 @@ namespace LoxStatEdit
                 ContextMenu m = new ContextMenu();
                 m.MenuItems.Add(new MenuItem("delete selected entries", mnuDeleteSelected_Click));
                 m.MenuItems.Add(new MenuItem("insert entry", mnuInsertEntry_Click));
+                m.MenuItems.Add(new MenuItem("fill entries", mnuFillEntries_Click));
                 m.MenuItems.Add(new MenuItem("Calc from row", mnuCalcfrom_Click));
                 m.MenuItems.Add(new MenuItem("Calc selected", mnuCalcSelected_Click));
                 //m.MenuItems[0].Enabled = false;
@@ -164,6 +167,7 @@ namespace LoxStatEdit
                     m.MenuItems[1].Enabled = false;
                     m.MenuItems[2].Enabled = false;
                     m.MenuItems[3].Enabled = false;
+                    m.MenuItems[4].Enabled = false;
                 }
 
                 if (_dataGridView.SelectedRows.Count < 2)
@@ -245,35 +249,99 @@ namespace LoxStatEdit
 
         private void mnuDeleteSelected_Click(object sender, EventArgs e)
         {
+            Cursor = Cursors.WaitCursor;
+            int tmpID;
+            //_inProgress = true;
             int rowIndex = _dataGridView.SelectedRows[0].Index;
+            int selCount = _dataGridView.SelectedRows.Count;
+            int lastSelIndex = _dataGridView.SelectedRows[_dataGridView.SelectedRows.Count - 1].Index;
             //_loxStatFile.DataPoints.RemoveAt(rowIndex);
-            for (int x = _dataGridView.SelectedRows.Count -1; x >= 0; x--)
+            for (int x = 0; x < selCount; x++)
             {
-                _loxStatFile.DataPoints.RemoveAt(_dataGridView.SelectedRows[x].Index);
-                _dataGridView.Rows.RemoveAt(_dataGridView.SelectedRows[x].Index);
+                _loxStatFile.DataPoints.RemoveAt(_dataGridView.SelectedRows[0].Index);
+                _dataGridView.Rows.RemoveAt(_dataGridView.SelectedRows[0].Index);
             }
             //_dataGridView.Rows.Remove(_dataGridView.SelectedRows[0]);
             int rowCount = _dataGridView.RowCount;
-            for (int x = rowIndex; x < rowCount; x++)
+            for (int x = lastSelIndex; x < rowCount; x++)
             {
                 if (x == 0)
                 {
                     _loxStatFile.DataPoints[x].Index = 0;
-                    _dataGridView.Rows[x].Cells[0].Value = 0;
+                   // _dataGridView.Rows[x].Cells[0].Value = 0;
                 }
                 else
                 {
-                    _loxStatFile.DataPoints[x].Index = _loxStatFile.DataPoints[x - 1].Index + 1;
-                    _dataGridView.Rows[x].Cells[0].Value = ((int)_dataGridView.Rows[x - 1].Cells[0].Value + 1).ToString();
+                    tmpID = _loxStatFile.DataPoints[x - 1].Index + 1;
+                    _loxStatFile.DataPoints[x].Index = tmpID;
+                   // _dataGridView.Rows[x].Cells[0].Value = ((int)_dataGridView.Rows[x - 1].Cells[0].Value + 1).ToString();
                 }
             }
+            _dataGridView.Refresh();
             RefreshProblems();
             RefreshChart();
+            _inProgress = false;
+            Cursor = Cursors.Default;
         }
 
         private void mnuInsertEntry_Click(object sender, EventArgs e)
         {
+            Cursor = Cursors.WaitCursor;
+            DataGridViewRow newRow = (DataGridViewRow)_dataGridView.Rows[0].Clone();
+            DataGridViewRow atInsert = _dataGridView.SelectedRows[0];
+            LoxStatDataPoint beforeDP;
+            LoxStatDataPoint newDP;
+            LoxStatDataPoint atDP = _loxStatFile.DataPoints[atInsert.Index];
+            for(int x=atDP.Index; x <_loxStatFile.DataPoints.Count; x++)
+            {
+                _loxStatFile.DataPoints[x].Index += 1;
+            }
+            if (atInsert.Index == 0)
+            {
+                newDP = atDP.Clone();
+                newDP.Index = 0;
+                newDP.Values[0] = 0;
+                newDP.Timestamp = new DateTime(atDP.Timestamp.Year, atDP.Timestamp.Month, 1, 0, 0, 0);
+                _dataGridView.Rows.Insert(0, newRow);
+                _loxStatFile.DataPoints.Insert(0, newDP);
+            } else
+            {
+                beforeDP = _loxStatFile.DataPoints[atDP.Index - 2];
+                newDP = beforeDP.Clone();
+                newDP.Index = atInsert.Index;
+                newDP.Timestamp = beforeDP.Timestamp.AddHours(1);
+                _dataGridView.Rows.Insert(atInsert.Index-1, newRow);
+                _loxStatFile.DataPoints.Insert(atInsert.Index-1, newDP);
+            }
+            Cursor = Cursors.Default;
+        }
 
+        private void mnuFillEntries_Click(object sender, EventArgs e)
+        {
+            Cursor = Cursors.WaitCursor;
+            if (_dataGridView.SelectedRows[_dataGridView.SelectedRows.Count - 1].Index == 0) return;
+            DataGridViewRow newRow = (DataGridViewRow)_dataGridView.Rows[0].Clone();
+            DataGridViewRow atInsert = _dataGridView.SelectedRows[_dataGridView.SelectedRows.Count - 1];
+            LoxStatDataPoint beforeDP = _loxStatFile.DataPoints[atInsert.Index -1];
+            LoxStatDataPoint newDP;
+            LoxStatDataPoint atDP = _loxStatFile.DataPoints[atInsert.Index];
+            TimeSpan ts = atDP.Timestamp - beforeDP.Timestamp;
+            double InsertCount = ts.TotalHours -1;
+            for (int x = atDP.Index; x < _loxStatFile.DataPoints.Count; x++)
+            {
+                _loxStatFile.DataPoints[x].Index += (int)InsertCount;
+            }
+            double diff = ((double)atDP.Values[0] - (double)beforeDP.Values[0]) / InsertCount;
+            for (int x = 1; x <= InsertCount; x++)
+            {
+                newDP = beforeDP.Clone();
+                newDP.Index += x;
+                newDP.Timestamp = newDP.Timestamp.AddHours(x);
+                newDP.Values[0] += diff * x;
+                _loxStatFile.DataPoints.Insert(newDP.Index, newDP);
+            }
+            _dataGridView.Refresh();
+            Cursor = Cursors.Default;
         }
 
         private static DialogResult ShowInputDialog(ref string input)
