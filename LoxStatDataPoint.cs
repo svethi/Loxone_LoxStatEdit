@@ -149,5 +149,14 @@ namespace LoxStatEdit
                 writer.Write(value);
             writer.Write(Padding);
         }
+
+        public LoxStatDataPoint Clone()
+        {
+            LoxStatDataPoint other = (LoxStatDataPoint) this.MemberwiseClone();
+            other.Values = (Double[]) this.Values.Clone();
+            other.Padding = (Byte[]) this.Padding.Clone();
+            return other;
+        }
+
     }
 }
