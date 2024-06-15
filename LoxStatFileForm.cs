@@ -331,7 +331,7 @@ namespace LoxStatEdit
             {
                 _loxStatFile.DataPoints[x].Index += (int)InsertCount;
             }
-            double diff = ((double)atDP.Values[0] - (double)beforeDP.Values[0]) / InsertCount;
+            double diff = ((double)atDP.Values[0] - (double)beforeDP.Values[0]) / (InsertCount +1);
             for (int x = 1; x <= InsertCount; x++)
             {
                 newDP = beforeDP.Clone();
@@ -339,6 +339,7 @@ namespace LoxStatEdit
                 newDP.Timestamp = newDP.Timestamp.AddHours(x);
                 newDP.Values[0] += diff * x;
                 _loxStatFile.DataPoints.Insert(newDP.Index, newDP);
+                _dataGridView.Rows.Insert(newDP.Index, 1);
             }
             _dataGridView.Refresh();
             Cursor = Cursors.Default;
