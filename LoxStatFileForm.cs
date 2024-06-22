@@ -307,11 +307,18 @@ namespace LoxStatEdit
             } else
             {
                 beforeDP = _loxStatFile.DataPoints[atDP.Index - 2];
-                newDP = beforeDP.Clone();
-                newDP.Index = atInsert.Index;
-                newDP.Timestamp = beforeDP.Timestamp.AddHours(1);
-                _dataGridView.Rows.Insert(atInsert.Index-1, newRow);
-                _loxStatFile.DataPoints.Insert(atInsert.Index-1, newDP);
+                if (beforeDP.Timestamp < atDP.Timestamp.AddMinutes(-119))
+                {
+                    newDP = beforeDP.Clone();
+                    newDP.Index = atInsert.Index;
+                    newDP.Timestamp = beforeDP.Timestamp.AddHours(1);
+                    _dataGridView.Rows.Insert(atInsert.Index - 1, newRow);
+                    _loxStatFile.DataPoints.Insert(atInsert.Index - 1, newDP);
+                } else
+                {
+                    MessageBox.Show("There is not place to insert an entry! You should delete an entry first?!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+               
             }
             Cursor = Cursors.Default;
         }
