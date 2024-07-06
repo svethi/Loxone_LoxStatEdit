@@ -153,11 +153,11 @@ namespace LoxStatEdit
             if (e.Button == MouseButtons.Right)
             {
                 ContextMenu m = new ContextMenu();
-                m.MenuItems.Add(new MenuItem("delete selected entries", mnuDeleteSelected_Click));
-                m.MenuItems.Add(new MenuItem("insert entry", mnuInsertEntry_Click));
-                m.MenuItems.Add(new MenuItem("fill entries", mnuFillEntries_Click));
-                m.MenuItems.Add(new MenuItem("Calc from row", mnuCalcfrom_Click));
-                m.MenuItems.Add(new MenuItem("Calc selected", mnuCalcSelected_Click));
+                m.MenuItems.Add(new MenuItem("Delete selected entries", mnuDeleteSelected_Click));
+                m.MenuItems.Add(new MenuItem("Insert entry", mnuInsertEntry_Click));
+                m.MenuItems.Add(new MenuItem("Fill entries", mnuFillEntries_Click));
+                m.MenuItems.Add(new MenuItem("Calculate from row", mnuCalcfrom_Click));
+                m.MenuItems.Add(new MenuItem("Calculate selected", mnuCalcSelected_Click));
                 //m.MenuItems[0].Enabled = false;
                 //m.MenuItems[1].Enabled = false;
 
@@ -186,8 +186,8 @@ namespace LoxStatEdit
         {
             string chrDec = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
             string chrGrp = CultureInfo.CurrentCulture.NumberFormat.NumberGroupSeparator;
-            string input = "V - 100";
-            string pattern = "V";
+            string input = "v - 100";
+            string pattern = "v";
             string replacement = "1";
             double myValue;
             string formula = "";
@@ -316,7 +316,7 @@ namespace LoxStatEdit
                     _loxStatFile.DataPoints.Insert(atInsert.Index - 1, newDP);
                 } else
                 {
-                    MessageBox.Show("There is not place to insert an entry! You should delete an entry first?!", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("There is not place to insert an entry! Please check again, if there is a missing entry.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                
             }
@@ -370,8 +370,8 @@ namespace LoxStatEdit
             Label lblInfo = new Label();
             lblInfo.Size = new Size(size.Width - 30, 60);
             lblInfo.Location = new Point(15, 37);
-            lblInfo.Text = "type in a math formula including +,-,*,/. " +
-                "Use V for the original value." +
+            lblInfo.Text = "Insert a formula for calculating the values. Allowed operators: + - / * ( )\n" +
+                "Use v for the original value.\n" +
                 "Like: v - 100";
             inputBox.Controls.Add(lblInfo);
 
@@ -459,7 +459,6 @@ namespace LoxStatEdit
         {
             if (e.Control && e.KeyCode == Keys.V)
             {
-
                 string CopiedContent = Clipboard.GetText();
                 string[] Lines = CopiedContent.Split('\n');
                 int StartingRow = _dataGridView.CurrentCell.RowIndex;
