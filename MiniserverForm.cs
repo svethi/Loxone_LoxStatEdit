@@ -145,6 +145,9 @@ namespace LoxStatEdit
             // Create a new SortableBindingList
             _fileItems = new SortableBindingList<FileItem>();
 
+            // Retrieve the filter text
+            string filterText = _filterTextBox.Text.ToLower();
+
             // Get the data
             var data = msMap.Select(e => e.Key).Union(localMap.Select(e => e.Key)).
                 Select(f => new FileItem
@@ -153,6 +156,7 @@ namespace LoxStatEdit
                     FileInfo = localMap[f].FirstOrDefault(),
                 }).
                 // Order by filename if available else by name
+                Where(f => f.FileName.ToLower().Contains(filterText) || f.Name.ToLower().Contains(filterText)).
                 OrderBy(f => f.MsFileInfo?.FileName ?? f.FileInfo?.Name).
                 ToList();
 
@@ -373,6 +377,11 @@ namespace LoxStatEdit
             RefreshGridView();
         }
 
+        private void FilterButton_Click(object sender, EventArgs e)
+        {
+            RefreshGridView();
+        }
+
         private void _urlTextBox_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter && !string.IsNullOrWhiteSpace(_folderTextBox.Text))
@@ -390,6 +399,14 @@ namespace LoxStatEdit
                 RefreshFolderButton_Click(sender, e);
                 e.Handled = true;
                 e.SuppressKeyPress = true;
+            }
+        }
+
+        private void _filterTextBox_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter && !string.IsNullOrWhiteSpace(_folderTextBox.Text))
+            {
+                RefreshGridView();
             }
         }
 

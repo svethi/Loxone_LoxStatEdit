@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.0.5.0
+
+* Added: Calculate entries
+* Added: Filter entries
+
 ## v1.0.4.0
 
 * Added: Allow user to sort by selected column
