@@ -22,6 +22,9 @@ namespace LoxStatEdit
         {
             _args = args;
             InitializeComponent();
+
+            // Subscribe to the MouseClick event of the chart
+            _chart.MouseClick += _chartMouseClick;
         }
 
         private void LoadFile()
@@ -497,6 +500,58 @@ namespace LoxStatEdit
             _chart.Width = (int)(availableWidth * 0.55);
         }
 
-     
+        private void _chartMouseClick(object sender, MouseEventArgs e)
+        {
+            // Define a tolerance in pixels
+            const double tolerance = 10;
+
+            // Perform a hit test to find the clicked chart element
+            HitTestResult result = _chart.HitTest(e.X, e.Y);
+
+            // Initialize variables to track the closest data point and its distance
+            double minDistance = double.MaxValue;
+            int closestPointIndex = -1;
+
+            // Check all series in the chart
+            foreach (Series series in _chart.Series)
+            {
+                for (int i = 0; i < series.Points.Count; i++)
+                {
+                    DataPoint point = series.Points[i];
+                    // Convert data point position to pixel position in the chart
+                    double pointX = _chart.ChartAreas[0].AxisX.ValueToPixelPosition(point.XValue);
+                    double pointY = _chart.ChartAreas[0].AxisY.ValueToPixelPosition(point.YValues[0]);
+
+                    // Calculate distance from the click to this data point
+                    double distance = Math.Sqrt(Math.Pow(e.X - pointX, 2) + Math.Pow(e.Y - pointY, 2));
+
+                    // Check if this is the closest data point so far
+                    if (distance < minDistance)
+                    {
+                        minDistance = distance;
+                        closestPointIndex = i;
+                    }
+                }
+            }
+
+            // If the closest data point is within the tolerance, treat it as a click on that point
+            if (minDistance <= tolerance && closestPointIndex != -1)
+            {
+                // Assuming the closest data point index corresponds to the row index in the DataGridView
+                // Make sure to validate the index before using it
+                if (closestPointIndex >= 0 && closestPointIndex < _dataGridView.Rows.Count)
+                {
+                    // Clear the current selection
+                    _dataGridView.ClearSelection();
+
+                    // Select the corresponding row in the DataGridView
+                    _dataGridView.Rows[closestPointIndex].Selected = true;
+
+                    // Optionally, scroll to the selected row if it's not visible
+                    _dataGridView.FirstDisplayedScrollingRowIndex = closestPointIndex;
+                }
+            }
+        }
+
     }
 }

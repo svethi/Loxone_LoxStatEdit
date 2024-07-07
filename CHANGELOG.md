@@ -4,6 +4,7 @@
 
 * Added: Calculate entries
 * Added: Filter entries
+* Added: Select related row when clicking on graph
 
 ## v1.0.4.0
 
