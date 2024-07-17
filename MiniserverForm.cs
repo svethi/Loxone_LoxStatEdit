@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -35,8 +36,27 @@ namespace LoxStatEdit
                     {
                         try
                         {
-                            if(FileInfo != null)
+                            if (FileInfo != null)
+                            {
                                 _name = LoxStatFile.Load(FileInfo.FullName, true).Text;
+                                
+                                // Append the file extension as a suffix could be _1.202407 or 202407
+                                // This is a workaround until the sorting on two levels is implemented
+                                // e.g. sort by description and then by filename, else the files are not in historical order
+                                _name += " [";
+
+                                // check if filename contains _
+                                if (FileInfo.Name.Contains("_"))
+                                {
+                                    string[] split = FileInfo.Name.Split('_');
+                                    _name += split[1];
+                                }
+                                else { 
+                                    _name += FileInfo.Name.Substring(FileInfo.Name.Length - 6);
+                                }
+
+                                _name += "]";
+                            }
                         }
                         catch(Exception)
                         {
@@ -130,14 +150,22 @@ namespace LoxStatEdit
                 _msFolder = new List<MsFileInfo>();
             }
 
+            // Save the current sort conditions
+            var sortColumn = _dataGridView.SortedColumn;
+            var sortOrder = _dataGridView.SortOrder;
+
             // Save the current scrolling position
             int scrollPosition = _dataGridView.FirstDisplayedScrollingRowIndex;
-            Console.WriteLine($"Scroll position: {scrollPosition}");
+            //Console.WriteLine($"Scroll position: {scrollPosition}");
 
             // Save the current selection
             var selectedCells = _dataGridView.SelectedCells.Cast<DataGridViewCell>()
                 .Select(cell => new { cell.RowIndex, cell.ColumnIndex })
                 .ToList();
+
+            // Save the current active cell (for restoring the selection arrow)
+            int? activeCellRowIndex = _dataGridView.CurrentCell?.RowIndex;
+            int? activeCellColumnIndex = _dataGridView.CurrentCell?.ColumnIndex;
 
             var msMap = _msFolder.ToLookup(e => e.FileName, StringComparer.OrdinalIgnoreCase);
             var localMap = _localFolder.ToLookup(e => e.Name, StringComparer.OrdinalIgnoreCase);
@@ -214,6 +242,26 @@ namespace LoxStatEdit
             // Bind the SortableBindingList to the DataGridView
             _dataGridView.DataSource = _fileItems;
 
+            // Restore the sort conditions
+            if (sortColumn != null && sortOrder != SortOrder.None)
+            {
+                // Determine the ListSortDirection from the SortOrder
+                ListSortDirection direction = sortOrder == SortOrder.Ascending ? ListSortDirection.Ascending : ListSortDirection.Descending;
+
+                // Find the DataGridViewColumn to sort by
+                DataGridViewColumn columnToSort = _dataGridView.Columns
+                    .OfType<DataGridViewColumn>()
+                    .FirstOrDefault(c => c.DataPropertyName == sortColumn.DataPropertyName);
+
+                // TODO: Add second sort level, to always sort by FileName as second level with same direction as first level
+
+                if (columnToSort != null)
+                {
+                    // Reapply the sort
+                    _dataGridView.Sort(columnToSort, direction);
+                }
+            }
+
             // Restore the scrolling position
             if (_dataGridView.RowCount > 0 && scrollPosition != -1 && scrollPosition < _dataGridView.RowCount)
             {
@@ -222,6 +270,14 @@ namespace LoxStatEdit
 
             // Clear the default selection
             _dataGridView.ClearSelection();
+
+            // Restore the CurrentCell to restore the selection arrow
+            if (activeCellRowIndex.HasValue && activeCellColumnIndex.HasValue
+                && activeCellRowIndex.Value < _dataGridView.RowCount
+                && activeCellColumnIndex.Value < _dataGridView.ColumnCount)
+            {
+                _dataGridView.CurrentCell = _dataGridView.Rows[activeCellRowIndex.Value].Cells[activeCellColumnIndex.Value];
+            }
 
             // Restore the selection
             if (selectedCells.Any())

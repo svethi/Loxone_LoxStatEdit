@@ -5,6 +5,7 @@
 * Added: Calculate entries
 * Added: Filter entries
 * Added: Select related row when clicking on graph
+* Changed: Save sorting and selection arrow when refreshing file list
 
 ## v1.0.4.0
 
