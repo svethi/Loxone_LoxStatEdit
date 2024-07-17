@@ -7,6 +7,7 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using System.Text.RegularExpressions;
+using System.Data.Common;
 
 namespace LoxStatEdit
 {
@@ -156,89 +157,85 @@ namespace LoxStatEdit
             if (e.Button == MouseButtons.Right)
             {
                 ContextMenu m = new ContextMenu();
-                m.MenuItems.Add(new MenuItem("Delete selected entries", mnuDeleteSelected_Click));
-                m.MenuItems.Add(new MenuItem("Insert entry", mnuInsertEntry_Click));
-                m.MenuItems.Add(new MenuItem("Fill entries", mnuFillEntries_Click));
-                m.MenuItems.Add(new MenuItem("Calculate from row", mnuCalcfrom_Click));
-                m.MenuItems.Add(new MenuItem("Calculate selected", mnuCalcSelected_Click));
-                //m.MenuItems[0].Enabled = false;
-                //m.MenuItems[1].Enabled = false;
+                m.MenuItems.Add(new MenuItem("Calculate selected", modalCalcSelected_Click));
+                m.MenuItems.Add(new MenuItem("Calculate downwards", modalCalcFrom_Click));
+                m.MenuItems.Add(new MenuItem("Insert entry", modalInsertEntry_Click));
+                m.MenuItems.Add(new MenuItem("Delete selected entries", modalDeleteSelected_Click));
+                m.MenuItems.Add(new MenuItem("Fill entries", modalFillEntries_Click));
 
+                bool allowCalcSelected = true;
+                bool allowCalcFrom = true;
+                bool allowInsertEntry = true;
+                bool allowDeleteSelected = true;
+
+                foreach (DataGridViewCell cell in _dataGridView.SelectedCells)
+                {
+                    // check if "calculate selected" is allowed
+                    // at least one row or calculable cell has to be selected
+                    if (_dataGridView.SelectedRows.Count == 0 && cell.ColumnIndex < 2)
+                    {
+                        // At least one cell from the second row onwards has to be selected
+                        allowCalcSelected = false;
+                    }
+                    //Console.WriteLine($"row: {cell.RowIndex}, column: {cell.ColumnIndex} is selected.");
+                }
+                //Console.WriteLine($"Selected rows: {_dataGridView.SelectedRows.Count}");
+                //Console.WriteLine("---");
+
+                // check if "calculate downwards" is allowed
+                if (
+                    (_dataGridView.SelectedRows.Count != 1 && _dataGridView.SelectedCells[0].ColumnIndex == 0)
+                    ||
+                    (_dataGridView.SelectedRows.Count == 0 && _dataGridView.SelectedCells.Count != 1)
+                    ||
+                    (_dataGridView.SelectedRows.Count == 0 && _dataGridView.SelectedCells[0].ColumnIndex < 2)
+                )
+                {
+                    allowCalcFrom = false;
+                }
+
+                // check if "insert entry" is allowed
+                if (_dataGridView.SelectedRows.Count != 1)
+                {
+                    allowInsertEntry = false;
+                }
+
+                // check if "delete selected entries" is allowed
                 if (_dataGridView.SelectedRows.Count < 1)
                 {
-                    m.MenuItems[0].Enabled = false;
-                    m.MenuItems[1].Enabled = false;
-                    m.MenuItems[2].Enabled = false;
-                    m.MenuItems[3].Enabled = false;
-                    m.MenuItems[4].Enabled = false;
+                    allowDeleteSelected = false;
                 }
 
-                if (_dataGridView.SelectedRows.Count < 2)
-                {
-                    //m.MenuItems[0].Enabled = false;
-                    m.MenuItems[3].Enabled = false;
-                }
-                int currentMouseOverRow = e.RowIndex;
 
-                m.Show(_dataGridView, new Point(e.Location.X, e.Location.Y));
+                // Calculate selected
+                m.MenuItems[0].Enabled = allowCalcSelected;
+                // Calculate downwards from this row
+                m.MenuItems[1].Enabled = allowCalcFrom;
+                // Insert entry
+                m.MenuItems[2].Enabled = allowInsertEntry;
+                // Delete selected entries
+                m.MenuItems[3].Enabled = allowDeleteSelected;
+
+                // Show the context menu on mouse position
+                m.Show(_dataGridView, new Point(_dataGridView.PointToClient(Control.MousePosition).X, _dataGridView.PointToClient(Control.MousePosition).Y));
 
             }
         }
 
-        private void mnuCalcfrom_Click(object sender, EventArgs e)
-        {
-            string chrDec = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
-            string chrGrp = CultureInfo.CurrentCulture.NumberFormat.NumberGroupSeparator;
-            string input = "v - 100";
-            string pattern = "v";
-            string replacement = "1";
-            double myValue;
-            string formula = "";
-            bool isFormula = true;
-
-            ShowInputDialog(ref input);
-
-            if (chrDec == ",")
-            {
-                input = Regex.Replace(input, "/.", "");
-                input = Regex.Replace(input, chrDec, chrGrp);
-            }
-
-            formula = Regex.Replace(input, pattern, replacement);
-            try
-            {
-                myValue = Convert.ToDouble(new System.Data.DataTable().Compute(formula, null));
-            } catch (System.Data.DataException de)
-            {
-                MessageBox.Show(de.Message);
-                isFormula = false;
-            }
-            
-
-            if (isFormula) {
-                for (int x = _dataGridView.SelectedRows[0].Cells[0].RowIndex; x < _dataGridView.Rows.Count; x++)
-                {
-                    replacement = Convert.ToDouble(_dataGridView.Rows[x].Cells[2].Value).ToString("#.###", CultureInfo.CreateSpecificCulture("en-EN"));
-                    formula = Regex.Replace(input, pattern, replacement);
-                    try
-                    {
-                        myValue = Convert.ToDouble(new System.Data.DataTable().Compute(formula, null));
-                    } catch (System.Data.DataException re)
-                    {
-                        myValue = Convert.ToDouble(replacement);
-                    }
-
-                    _dataGridView.Rows[x].Cells[2].Value = myValue.ToString();
-                }
-            }
-
-        }
-
-        private void mnuCalcSelected_Click(object sender, EventArgs e)
+        private void modalCalcSelected_Click(object sender, EventArgs e)
         {
             string input = "0";
             double myValue;
-            ShowInputDialog(ref input);
+
+            // Show the input dialog and check the result
+            DialogResult dialogResult = ShowInputDialog(ref input);
+            if (dialogResult == DialogResult.Cancel)
+            {
+                // User clicked "Cancel" or pressed "ESC", abort the operation
+                Console.WriteLine("User cancelled the operation.");
+                return;
+            }
+
             if (Double.TryParse(input, out myValue))
             {
                 foreach (DataGridViewRow myRow in _dataGridView.SelectedRows)
@@ -250,7 +247,103 @@ namespace LoxStatEdit
 
         }
 
-        private void mnuDeleteSelected_Click(object sender, EventArgs e)
+        private void modalCalcFrom_Click(object sender, EventArgs e)
+        {
+            string chrDec = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
+            string chrGrp = CultureInfo.CurrentCulture.NumberFormat.NumberGroupSeparator;
+            string input = "v - 100";
+            string pattern = "v";
+            string replacement = "1";
+            double myValue;
+            string formula = "";
+            bool isFormula = true;
+
+            // Show the input dialog and check the result
+            DialogResult dialogResult = ShowInputDialog(ref input);
+            if (dialogResult == DialogResult.Cancel)
+            {
+                // User clicked "Cancel" or pressed "ESC", abort the operation
+                Console.WriteLine("User cancelled the operation.");
+                return;
+            }
+
+            if (chrDec == ",")
+            {
+                input = Regex.Replace(input, "/.", "");
+                input = Regex.Replace(input, chrDec, chrGrp);
+            }
+
+            formula = Regex.Replace(input, pattern, replacement);
+            try
+            {
+                myValue = Convert.ToDouble(new System.Data.DataTable().Compute(formula, null));
+            }
+            catch (System.Data.DataException de)
+            {
+                MessageBox.Show(de.Message);
+                isFormula = false;
+            }
+
+            if (isFormula)
+            {
+                for (int x = _dataGridView.SelectedRows[0].Cells[0].RowIndex; x < _dataGridView.Rows.Count; x++)
+                {
+                    replacement = Convert.ToDouble(_dataGridView.Rows[x].Cells[2].Value).ToString("#.###", CultureInfo.CreateSpecificCulture("en-EN"));
+                    formula = Regex.Replace(input, pattern, replacement);
+                    try
+                    {
+                        myValue = Convert.ToDouble(new System.Data.DataTable().Compute(formula, null));
+                    }
+                    catch (System.Data.DataException re)
+                    {
+                        myValue = Convert.ToDouble(replacement);
+                    }
+
+                    _dataGridView.Rows[x].Cells[2].Value = myValue.ToString();
+                }
+            }
+        }
+
+        private void modalInsertEntry_Click(object sender, EventArgs e)
+        {
+            Cursor = Cursors.WaitCursor;
+            DataGridViewRow newRow = (DataGridViewRow)_dataGridView.Rows[0].Clone();
+            DataGridViewRow atInsert = _dataGridView.SelectedRows[0];
+            LoxStatDataPoint beforeDP;
+            LoxStatDataPoint newDP;
+            LoxStatDataPoint atDP = _loxStatFile.DataPoints[atInsert.Index];
+            for(int x=atDP.Index; x <_loxStatFile.DataPoints.Count; x++)
+            {
+                _loxStatFile.DataPoints[x].Index += 1;
+            }
+            if (atInsert.Index == 0)
+            {
+                newDP = atDP.Clone();
+                newDP.Index = 0;
+                newDP.Values[0] = 0;
+                newDP.Timestamp = new DateTime(atDP.Timestamp.Year, atDP.Timestamp.Month, 1, 0, 0, 0);
+                _dataGridView.Rows.Insert(0, newRow);
+                _loxStatFile.DataPoints.Insert(0, newDP);
+            } else
+            {
+                beforeDP = _loxStatFile.DataPoints[atDP.Index - 2];
+                if (beforeDP.Timestamp < atDP.Timestamp.AddMinutes(-119))
+                {
+                    newDP = beforeDP.Clone();
+                    newDP.Index = atInsert.Index;
+                    newDP.Timestamp = beforeDP.Timestamp.AddHours(1);
+                    _dataGridView.Rows.Insert(atInsert.Index - 1, newRow);
+                    _loxStatFile.DataPoints.Insert(atInsert.Index - 1, newDP);
+                } else
+                {
+                    MessageBox.Show("There is not place to insert an entry!\n\nPlease check again, if there is a missing entry.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+               
+            }
+            Cursor = Cursors.Default;
+        }
+
+        private void modalDeleteSelected_Click(object sender, EventArgs e)
         {
             Cursor = Cursors.WaitCursor;
             int tmpID;
@@ -287,46 +380,7 @@ namespace LoxStatEdit
             Cursor = Cursors.Default;
         }
 
-        private void mnuInsertEntry_Click(object sender, EventArgs e)
-        {
-            Cursor = Cursors.WaitCursor;
-            DataGridViewRow newRow = (DataGridViewRow)_dataGridView.Rows[0].Clone();
-            DataGridViewRow atInsert = _dataGridView.SelectedRows[0];
-            LoxStatDataPoint beforeDP;
-            LoxStatDataPoint newDP;
-            LoxStatDataPoint atDP = _loxStatFile.DataPoints[atInsert.Index];
-            for(int x=atDP.Index; x <_loxStatFile.DataPoints.Count; x++)
-            {
-                _loxStatFile.DataPoints[x].Index += 1;
-            }
-            if (atInsert.Index == 0)
-            {
-                newDP = atDP.Clone();
-                newDP.Index = 0;
-                newDP.Values[0] = 0;
-                newDP.Timestamp = new DateTime(atDP.Timestamp.Year, atDP.Timestamp.Month, 1, 0, 0, 0);
-                _dataGridView.Rows.Insert(0, newRow);
-                _loxStatFile.DataPoints.Insert(0, newDP);
-            } else
-            {
-                beforeDP = _loxStatFile.DataPoints[atDP.Index - 2];
-                if (beforeDP.Timestamp < atDP.Timestamp.AddMinutes(-119))
-                {
-                    newDP = beforeDP.Clone();
-                    newDP.Index = atInsert.Index;
-                    newDP.Timestamp = beforeDP.Timestamp.AddHours(1);
-                    _dataGridView.Rows.Insert(atInsert.Index - 1, newRow);
-                    _loxStatFile.DataPoints.Insert(atInsert.Index - 1, newDP);
-                } else
-                {
-                    MessageBox.Show("There is not place to insert an entry! Please check again, if there is a missing entry.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-               
-            }
-            Cursor = Cursors.Default;
-        }
-
-        private void mnuFillEntries_Click(object sender, EventArgs e)
+        private void modalFillEntries_Click(object sender, EventArgs e)
         {
             Cursor = Cursors.WaitCursor;
             if (_dataGridView.SelectedRows[_dataGridView.SelectedRows.Count - 1].Index == 0) return;
