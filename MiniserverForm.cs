@@ -137,6 +137,9 @@ namespace LoxStatEdit
         {
             _args = args;
             InitializeComponent();
+
+            // Set the start position of the form to the center of the screen
+            this.StartPosition = FormStartPosition.CenterScreen;
         }
 
         #endregion
@@ -586,8 +589,17 @@ namespace LoxStatEdit
                     }
 
                     Console.WriteLine(fileItem.FileInfo.FullName);
-                    using(var form = new LoxStatFileForm(fileItem.FileInfo.FullName))
+                    using (var form = new LoxStatFileForm(fileItem.FileInfo.FullName))
+                    {
+                        // Calculate the new location
+                        int offsetX = 42; // Horizontal offset from the parent form
+                        int offsetY = 70; // Vertical offset from the parent form
+                        form.StartPosition = FormStartPosition.Manual; // Allows manual positioning
+                        form.Location = new System.Drawing.Point(this.Location.X + offsetX, this.Location.Y + offsetY);
+
+                        // Show the form as a dialog
                         form.ShowDialog(this);
+                    }
                     RefreshLocal();
                     RefreshGridView();
                     break;

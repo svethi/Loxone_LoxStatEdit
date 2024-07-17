@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
@@ -228,7 +228,7 @@ namespace LoxStatEdit
             double myValue;
 
             // Show the input dialog and check the result
-            DialogResult dialogResult = ShowInputDialog(ref input);
+            DialogResult dialogResult = ShowInputDialog(ref input, this);
             if (dialogResult == DialogResult.Cancel)
             {
                 // User clicked "Cancel" or pressed "ESC", abort the operation
@@ -259,7 +259,7 @@ namespace LoxStatEdit
             bool isFormula = true;
 
             // Show the input dialog and check the result
-            DialogResult dialogResult = ShowInputDialog(ref input);
+            DialogResult dialogResult = ShowInputDialog(ref input, this);
             if (dialogResult == DialogResult.Cancel)
             {
                 // User clicked "Cancel" or pressed "ESC", abort the operation
@@ -409,7 +409,7 @@ namespace LoxStatEdit
             Cursor = Cursors.Default;
         }
 
-        private static DialogResult ShowInputDialog(ref string input)
+        private static DialogResult ShowInputDialog(ref string input, Form parentForm)
         {
             System.Drawing.Size size = new System.Drawing.Size(250, 130);
             Form inputBox = new Form();
@@ -417,6 +417,7 @@ namespace LoxStatEdit
             inputBox.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             inputBox.ClientSize = size;
             inputBox.Text = "Name";
+            inputBox.StartPosition = FormStartPosition.CenterParent; // Set the start position
 
             System.Windows.Forms.TextBox textBox = new TextBox();
             textBox.Size = new System.Drawing.Size(size.Width - 20, 23);
