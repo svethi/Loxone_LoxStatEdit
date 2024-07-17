@@ -158,7 +158,7 @@ namespace LoxStatEdit
                 ContextMenu m = new ContextMenu();
                 m.MenuItems.Add(new MenuItem("Calculate selected", modalCalcSelected_Click));
                 m.MenuItems.Add(new MenuItem("Calculate downwards", modalCalcFrom_Click));
-                m.MenuItems.Add(new MenuItem("Insert entry", modalInsertEntry_Click));
+                m.MenuItems.Add(new MenuItem("Insert entry above", modalInsertEntry_Click));
                 m.MenuItems.Add(new MenuItem("Delete selected entries", modalDeleteSelected_Click));
                 m.MenuItems.Add(new MenuItem("Fill entries", modalFillEntries_Click));
 
@@ -425,39 +425,64 @@ namespace LoxStatEdit
         private void modalInsertEntry_Click(object sender, EventArgs e)
         {
             Cursor = Cursors.WaitCursor;
+
             DataGridViewRow newRow = (DataGridViewRow)_dataGridView.Rows[0].Clone();
             DataGridViewRow atInsert = _dataGridView.SelectedRows[0];
-            LoxStatDataPoint beforeDP;
+            LoxStatDataPoint beforeDP = null; // Initialize beforeDP to null
             LoxStatDataPoint newDP;
             LoxStatDataPoint atDP = _loxStatFile.DataPoints[atInsert.Index];
-            for(int x=atDP.Index; x <_loxStatFile.DataPoints.Count; x++)
-            {
-                _loxStatFile.DataPoints[x].Index += 1;
-            }
+
+            bool insertAllowed = false;
+
             if (atInsert.Index == 0)
             {
-                newDP = atDP.Clone();
-                newDP.Index = 0;
-                newDP.Values[0] = 0;
-                newDP.Timestamp = new DateTime(atDP.Timestamp.Year, atDP.Timestamp.Month, 1, 0, 0, 0);
-                _dataGridView.Rows.Insert(0, newRow);
-                _loxStatFile.DataPoints.Insert(0, newDP);
-            } else
+                insertAllowed = true; // Insertion at the beginning is always possible
+            }
+            else
             {
-                beforeDP = _loxStatFile.DataPoints[atDP.Index - 2];
-                if (beforeDP.Timestamp < atDP.Timestamp.AddMinutes(-119))
+                // Ensure beforeDP is assigned before this point
+                beforeDP = _loxStatFile.DataPoints[atDP.Index - 1];
+                if (beforeDP != null && beforeDP.Timestamp < atDP.Timestamp.AddMinutes(-119)) // Check for null to satisfy the compiler
                 {
-                    newDP = beforeDP.Clone();
-                    newDP.Index = atInsert.Index;
-                    newDP.Timestamp = beforeDP.Timestamp.AddHours(1);
-                    _dataGridView.Rows.Insert(atInsert.Index - 1, newRow);
-                    _loxStatFile.DataPoints.Insert(atInsert.Index - 1, newDP);
-                } else
+                    insertAllowed = true; // Insertion is possible based on timestamp comparison
+                }
+                else
                 {
                     MessageBox.Show("There is no place to insert an entry!\n\nPlease check again, if there is a missing entry.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
-               
             }
+
+            // Only adjust indices and insert new data point if insertion is confirmed
+            if (insertAllowed)
+            {
+                for (int x = atDP.Index; x < _loxStatFile.DataPoints.Count; x++)
+                {
+                    _loxStatFile.DataPoints[x].Index += 1;
+                }
+
+                if (atInsert.Index == 0)
+                {
+                    newDP = atDP.Clone();
+                    newDP.Index = 0;
+                    newDP.Values[0] = 0;
+                    newDP.Timestamp = new DateTime(atDP.Timestamp.Year, atDP.Timestamp.Month, 1, 0, 0, 0);
+                    _dataGridView.Rows.Insert(0, newRow);
+                    _loxStatFile.DataPoints.Insert(0, newDP);
+                }
+                else
+                {
+                    // Insertion logic for non-first row already validated above
+                    if (beforeDP != null) // Additional null check for safety
+                    {
+                        newDP = beforeDP.Clone();
+                        newDP.Index = atInsert.Index;
+                        newDP.Timestamp = beforeDP.Timestamp.AddHours(1);
+                        _dataGridView.Rows.Insert(atInsert.Index - 1, newRow);
+                        _loxStatFile.DataPoints.Insert(atInsert.Index - 1, newDP);
+                    }
+                }
+            }
+
             Cursor = Cursors.Default;
         }
 
@@ -501,28 +526,43 @@ namespace LoxStatEdit
         private void modalFillEntries_Click(object sender, EventArgs e)
         {
             Cursor = Cursors.WaitCursor;
-            if (_dataGridView.SelectedRows[_dataGridView.SelectedRows.Count - 1].Index == 0) return;
-            DataGridViewRow newRow = (DataGridViewRow)_dataGridView.Rows[0].Clone();
-            DataGridViewRow atInsert = _dataGridView.SelectedRows[_dataGridView.SelectedRows.Count - 1];
-            LoxStatDataPoint beforeDP = _loxStatFile.DataPoints[atInsert.Index -1];
-            LoxStatDataPoint newDP;
-            LoxStatDataPoint atDP = _loxStatFile.DataPoints[atInsert.Index];
-            TimeSpan ts = atDP.Timestamp - beforeDP.Timestamp;
-            double InsertCount = ts.TotalHours -1;
-            for (int x = atDP.Index; x < _loxStatFile.DataPoints.Count; x++)
+
+            // Iterate through all but the last row to check gaps with the next row
+            for (int i = 0; i < _loxStatFile.DataPoints.Count - 1; i++)
             {
-                _loxStatFile.DataPoints[x].Index += (int)InsertCount;
+                LoxStatDataPoint currentDP = _loxStatFile.DataPoints[i];
+                LoxStatDataPoint nextDP = _loxStatFile.DataPoints[i + 1];
+                TimeSpan ts = nextDP.Timestamp - currentDP.Timestamp;
+                double hoursDiff = ts.TotalHours;
+
+                // Check if there's more than 1 hour difference indicating a gap
+                if (hoursDiff > 1)
+                {
+                    double insertCount = hoursDiff - 1;
+                    double diff = (nextDP.Values[0] - currentDP.Values[0]) / (insertCount + 1);
+
+                    // Adjust indices for subsequent data points
+                    for (int x = nextDP.Index; x < _loxStatFile.DataPoints.Count; x++)
+                    {
+                        _loxStatFile.DataPoints[x].Index += (int)insertCount;
+                    }
+
+                    // Insert missing data points
+                    for (int x = 1; x <= insertCount; x++)
+                    {
+                        LoxStatDataPoint newDP = currentDP.Clone();
+                        newDP.Index += x;
+                        newDP.Timestamp = newDP.Timestamp.AddHours(x);
+                        newDP.Values[0] += diff * x;
+                        _loxStatFile.DataPoints.Insert(newDP.Index, newDP);
+                        _dataGridView.Rows.Insert(newDP.Index, 1);
+                    }
+
+                    // Adjust loop counter to skip newly inserted points
+                    i += (int)insertCount;
+                }
             }
-            double diff = ((double)atDP.Values[0] - (double)beforeDP.Values[0]) / (InsertCount +1);
-            for (int x = 1; x <= InsertCount; x++)
-            {
-                newDP = beforeDP.Clone();
-                newDP.Index += x;
-                newDP.Timestamp = newDP.Timestamp.AddHours(x);
-                newDP.Values[0] += diff * x;
-                _loxStatFile.DataPoints.Insert(newDP.Index, newDP);
-                _dataGridView.Rows.Insert(newDP.Index, 1);
-            }
+
             _dataGridView.Refresh();
             Cursor = Cursors.Default;
         }

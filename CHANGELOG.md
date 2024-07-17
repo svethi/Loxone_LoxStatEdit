@@ -2,9 +2,11 @@
 
 ## v1.0.5.0
 
-* Added: Calculate entries: It's possible to select multiple rows or cells to calculate only that cells and also to select a row or cell and let then calculate all values below automatically
-* Added: Filter entries
-* Added: Select related row when clicking on graph
+* Added: Automatically add missing datapoints. This allows you for example to change the first or last date and easily fill up datapoints until that dates
+* Added: Calculate datapoints: It's possible to select multiple rows or cells to calculate only that cells and also to select a row or cell and let then calculate all values below automatically
+* Added: Filter statistic entries
+* Added: Insert and delete datapoints
+* Added: Select related datapoint when clicking on graph
 * Changed: Optimized window opening positions
 * Changed: Save sorting and selection arrow when refreshing file list
 * Changed: Show a busy window, to let the user know something is happening when longer calculations are done
