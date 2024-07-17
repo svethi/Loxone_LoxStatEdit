@@ -147,151 +147,169 @@ namespace LoxStatEdit
         #region Methods
         private void RefreshGridView()
         {
-            // provide a empty list to prevent crash
-            if (_msFolder == null)
+            // Show the loading form
+            var busyForm = new BusyForm();
+            // Manually set the start position
+            busyForm.StartPosition = FormStartPosition.Manual;
+            var parent = this; // Reference to the parent form
+            busyForm.Left = parent.Left + (parent.Width - busyForm.Width) / 2;
+            busyForm.Top = parent.Top + (parent.Height - busyForm.Height) / 2;
+            busyForm.Show(this); // Or busyForm.ShowDialog(this) for a modal form
+            Application.DoEvents(); // Process events to ensure the loading form is displayed
+
+            try
             {
-                _msFolder = new List<MsFileInfo>();
-            }
-
-            // Save the current sort conditions
-            var sortColumn = _dataGridView.SortedColumn;
-            var sortOrder = _dataGridView.SortOrder;
-
-            // Save the current scrolling position
-            int scrollPosition = _dataGridView.FirstDisplayedScrollingRowIndex;
-            //Console.WriteLine($"Scroll position: {scrollPosition}");
-
-            // Save the current selection
-            var selectedCells = _dataGridView.SelectedCells.Cast<DataGridViewCell>()
-                .Select(cell => new { cell.RowIndex, cell.ColumnIndex })
-                .ToList();
-
-            // Save the current active cell (for restoring the selection arrow)
-            int? activeCellRowIndex = _dataGridView.CurrentCell?.RowIndex;
-            int? activeCellColumnIndex = _dataGridView.CurrentCell?.ColumnIndex;
-
-            var msMap = _msFolder.ToLookup(e => e.FileName, StringComparer.OrdinalIgnoreCase);
-            var localMap = _localFolder.ToLookup(e => e.Name, StringComparer.OrdinalIgnoreCase);
-
-            // Create a new SortableBindingList
-            _fileItems = new SortableBindingList<FileItem>();
-
-            // Retrieve the filter text
-            string filterText = _filterTextBox.Text.ToLower();
-
-            // Get the data
-            var data = msMap.Select(e => e.Key).Union(localMap.Select(e => e.Key)).
-                Select(f => new FileItem
+                // provide a empty list to prevent crash
+                if (_msFolder == null)
                 {
-                    MsFileInfo = msMap[f].FirstOrDefault(),
-                    FileInfo = localMap[f].FirstOrDefault(),
-                }).
-                // Order by filename if available else by name
-                Where(f => f.FileName.ToLower().Contains(filterText) || f.Name.ToLower().Contains(filterText)).
-                OrderBy(f => f.MsFileInfo?.FileName ?? f.FileInfo?.Name).
-                ToList();
-
-            // Add the data to the SortableBindingList
-            foreach (var item in data)
-            {
-                _fileItems.Add(item);
-            }
-
-            // Disable automatic column generation
-            _dataGridView.AutoGenerateColumns = false;
-
-            // Clear existing columns
-            _dataGridView.Columns.Clear();
-
-            // Add columns manually in the order you want
-            _dataGridView.Columns.Add(new DataGridViewTextBoxColumn {
-                DataPropertyName = "FileName",
-                HeaderText = "File",
-                Width = 250
-            });
-            _dataGridView.Columns.Add(new DataGridViewTextBoxColumn {
-                DataPropertyName = "Name",
-                HeaderText = "Description",
-                MinimumWidth = 250,
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill, 
-            });
-            _dataGridView.Columns.Add(new DataGridViewTextBoxColumn {
-                DataPropertyName = "YearMonth",
-                HeaderText = "Year/Month",
-                Width = 90,
-                DefaultCellStyle = { Format = "yyyy-MM" }
-            });
-            _dataGridView.Columns.Add(new DataGridViewTextBoxColumn {
-                DataPropertyName = "Status",
-                HeaderText = "Status",
-                Width = 100
-            });
-            _dataGridView.Columns.Add(new DataGridViewButtonColumn {
-                DataPropertyName = "Download",
-                HeaderText = "Download",
-                Width = 60
-            });
-            _dataGridView.Columns.Add(new DataGridViewButtonColumn {
-                DataPropertyName = "Edit",
-                HeaderText = "Edit",
-                Width = 50
-            });
-            _dataGridView.Columns.Add(new DataGridViewButtonColumn {
-                DataPropertyName = "Upload",
-                HeaderText = "Upload",
-                Width = 60
-            });
-
-            // Bind the SortableBindingList to the DataGridView
-            _dataGridView.DataSource = _fileItems;
-
-            // Restore the sort conditions
-            if (sortColumn != null && sortOrder != SortOrder.None)
-            {
-                // Determine the ListSortDirection from the SortOrder
-                ListSortDirection direction = sortOrder == SortOrder.Ascending ? ListSortDirection.Ascending : ListSortDirection.Descending;
-
-                // Find the DataGridViewColumn to sort by
-                DataGridViewColumn columnToSort = _dataGridView.Columns
-                    .OfType<DataGridViewColumn>()
-                    .FirstOrDefault(c => c.DataPropertyName == sortColumn.DataPropertyName);
-
-                // TODO: Add second sort level, to always sort by FileName as second level with same direction as first level
-
-                if (columnToSort != null)
-                {
-                    // Reapply the sort
-                    _dataGridView.Sort(columnToSort, direction);
+                    _msFolder = new List<MsFileInfo>();
                 }
-            }
 
-            // Restore the scrolling position
-            if (_dataGridView.RowCount > 0 && scrollPosition != -1 && scrollPosition < _dataGridView.RowCount)
-            {
-                _dataGridView.FirstDisplayedScrollingRowIndex = scrollPosition;
-            }
+                // Save the current sort conditions
+                var sortColumn = _dataGridView.SortedColumn;
+                var sortOrder = _dataGridView.SortOrder;
 
-            // Clear the default selection
-            _dataGridView.ClearSelection();
+                // Save the current scrolling position
+                int scrollPosition = _dataGridView.FirstDisplayedScrollingRowIndex;
+                //Console.WriteLine($"Scroll position: {scrollPosition}");
 
-            // Restore the CurrentCell to restore the selection arrow
-            if (activeCellRowIndex.HasValue && activeCellColumnIndex.HasValue
-                && activeCellRowIndex.Value < _dataGridView.RowCount
-                && activeCellColumnIndex.Value < _dataGridView.ColumnCount)
-            {
-                _dataGridView.CurrentCell = _dataGridView.Rows[activeCellRowIndex.Value].Cells[activeCellColumnIndex.Value];
-            }
+                // Save the current selection
+                var selectedCells = _dataGridView.SelectedCells.Cast<DataGridViewCell>()
+                    .Select(cell => new { cell.RowIndex, cell.ColumnIndex })
+                    .ToList();
 
-            // Restore the selection
-            if (selectedCells.Any())
-            {
-                foreach (var cell in selectedCells)
-                {
-                    if (cell.RowIndex < _dataGridView.RowCount && cell.ColumnIndex < _dataGridView.ColumnCount)
+                // Save the current active cell (for restoring the selection arrow)
+                int? activeCellRowIndex = _dataGridView.CurrentCell?.RowIndex;
+                int? activeCellColumnIndex = _dataGridView.CurrentCell?.ColumnIndex;
+
+                var msMap = _msFolder.ToLookup(e => e.FileName, StringComparer.OrdinalIgnoreCase);
+                var localMap = _localFolder.ToLookup(e => e.Name, StringComparer.OrdinalIgnoreCase);
+
+                // Create a new SortableBindingList
+                _fileItems = new SortableBindingList<FileItem>();
+
+                // Retrieve the filter text
+                string filterText = _filterTextBox.Text.ToLower();
+
+                // Get the data
+                var data = msMap.Select(e => e.Key).Union(localMap.Select(e => e.Key)).
+                    Select(f => new FileItem
                     {
-                        _dataGridView.Rows[cell.RowIndex].Cells[cell.ColumnIndex].Selected = true;
+                        MsFileInfo = msMap[f].FirstOrDefault(),
+                        FileInfo = localMap[f].FirstOrDefault(),
+                    }).
+                    // Order by filename if available else by name
+                    Where(f => f.FileName.ToLower().Contains(filterText) || f.Name.ToLower().Contains(filterText)).
+                    OrderBy(f => f.MsFileInfo?.FileName ?? f.FileInfo?.Name).
+                    ToList();
+
+                // Add the data to the SortableBindingList
+                foreach (var item in data)
+                {
+                    _fileItems.Add(item);
+                }
+
+                // Disable automatic column generation
+                _dataGridView.AutoGenerateColumns = false;
+
+                // Clear existing columns
+                _dataGridView.Columns.Clear();
+
+                // Add columns manually in the order you want
+                _dataGridView.Columns.Add(new DataGridViewTextBoxColumn {
+                    DataPropertyName = "FileName",
+                    HeaderText = "File",
+                    Width = 250
+                });
+                _dataGridView.Columns.Add(new DataGridViewTextBoxColumn {
+                    DataPropertyName = "Name",
+                    HeaderText = "Description",
+                    MinimumWidth = 250,
+                    AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill, 
+                });
+                _dataGridView.Columns.Add(new DataGridViewTextBoxColumn {
+                    DataPropertyName = "YearMonth",
+                    HeaderText = "Year/Month",
+                    Width = 90,
+                    DefaultCellStyle = { Format = "yyyy-MM" }
+                });
+                _dataGridView.Columns.Add(new DataGridViewTextBoxColumn {
+                    DataPropertyName = "Status",
+                    HeaderText = "Status",
+                    Width = 100
+                });
+                _dataGridView.Columns.Add(new DataGridViewButtonColumn {
+                    DataPropertyName = "Download",
+                    HeaderText = "Download",
+                    Width = 60
+                });
+                _dataGridView.Columns.Add(new DataGridViewButtonColumn {
+                    DataPropertyName = "Edit",
+                    HeaderText = "Edit",
+                    Width = 50
+                });
+                _dataGridView.Columns.Add(new DataGridViewButtonColumn {
+                    DataPropertyName = "Upload",
+                    HeaderText = "Upload",
+                    Width = 60
+                });
+
+                // Bind the SortableBindingList to the DataGridView
+                _dataGridView.DataSource = _fileItems;
+
+                // Restore the sort conditions
+                if (sortColumn != null && sortOrder != SortOrder.None)
+                {
+                    // Determine the ListSortDirection from the SortOrder
+                    ListSortDirection direction = sortOrder == SortOrder.Ascending ? ListSortDirection.Ascending : ListSortDirection.Descending;
+
+                    // Find the DataGridViewColumn to sort by
+                    DataGridViewColumn columnToSort = _dataGridView.Columns
+                        .OfType<DataGridViewColumn>()
+                        .FirstOrDefault(c => c.DataPropertyName == sortColumn.DataPropertyName);
+
+                    // TODO: Add second sort level, to always sort by FileName as second level with same direction as first level
+
+                    if (columnToSort != null)
+                    {
+                        // Reapply the sort
+                        _dataGridView.Sort(columnToSort, direction);
                     }
                 }
+
+                // Restore the scrolling position
+                if (_dataGridView.RowCount > 0 && scrollPosition != -1 && scrollPosition < _dataGridView.RowCount)
+                {
+                    _dataGridView.FirstDisplayedScrollingRowIndex = scrollPosition;
+                }
+
+                // Clear the default selection
+                _dataGridView.ClearSelection();
+
+                // Restore the CurrentCell to restore the selection arrow
+                if (activeCellRowIndex.HasValue && activeCellColumnIndex.HasValue
+                    && activeCellRowIndex.Value < _dataGridView.RowCount
+                    && activeCellColumnIndex.Value < _dataGridView.ColumnCount)
+                {
+                    _dataGridView.CurrentCell = _dataGridView.Rows[activeCellRowIndex.Value].Cells[activeCellColumnIndex.Value];
+                }
+
+                // Restore the selection
+                if (selectedCells.Any())
+                {
+                    foreach (var cell in selectedCells)
+                    {
+                        if (cell.RowIndex < _dataGridView.RowCount && cell.ColumnIndex < _dataGridView.ColumnCount)
+                        {
+                            _dataGridView.Rows[cell.RowIndex].Cells[cell.ColumnIndex].Selected = true;
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                // Close the loading form after the loop
+                busyForm.Close();
             }
         }
 
@@ -317,7 +335,7 @@ namespace LoxStatEdit
                 _folderTextBox.Text = folderBrowserDialog.SelectedPath;
             RefreshLocal();
             RefreshGridView();
-            Console.WriteLine("Refreshed local folder");
+            //Console.WriteLine("Refreshed local folder");
         }
 
         private void openFolderButton_Click(object sender, EventArgs e)
@@ -588,7 +606,7 @@ namespace LoxStatEdit
                         break;
                     }
 
-                    Console.WriteLine(fileItem.FileInfo.FullName);
+                    //Console.WriteLine(fileItem.FileInfo.FullName);
                     using (var form = new LoxStatFileForm(fileItem.FileInfo.FullName))
                     {
                         // Calculate the new location

@@ -2,11 +2,12 @@
 
 ## v1.0.5.0
 
-* Added: Calculate entries
+* Added: Calculate entries: It's possible to select multiple rows or cells to calculate only that cells and also to select a row or cell and let then calculate all values below automatically
 * Added: Filter entries
 * Added: Select related row when clicking on graph
 * Changed: Optimized window opening positions
 * Changed: Save sorting and selection arrow when refreshing file list
+* Changed: Show a busy window, to let the user know something is happening when longer calculations are done
 
 ## v1.0.4.0
 

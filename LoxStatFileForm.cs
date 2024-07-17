@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
@@ -7,7 +7,6 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using System.Text.RegularExpressions;
-using System.Data.Common;
 
 namespace LoxStatEdit
 {
@@ -224,8 +223,14 @@ namespace LoxStatEdit
 
         private void modalCalcSelected_Click(object sender, EventArgs e)
         {
-            string input = "0";
+            string chrDec = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
+            string chrGrp = CultureInfo.CurrentCulture.NumberFormat.NumberGroupSeparator;
+            string input = "v - 100";
+            string pattern = "v";
+            string replacement = "1";
             double myValue;
+            string formula = "";
+            bool isFormula = true;
 
             // Show the input dialog and check the result
             DialogResult dialogResult = ShowInputDialog(ref input, this);
@@ -236,14 +241,78 @@ namespace LoxStatEdit
                 return;
             }
 
-            if (Double.TryParse(input, out myValue))
+
+            // Replace comma, if it is the decimal separator
+            if (chrDec == ",")
             {
-                foreach (DataGridViewRow myRow in _dataGridView.SelectedRows)
-                {
-                    myRow.Cells[2].Value = (Convert.ToDouble(myRow.Cells[2].Value.ToString()) + Convert.ToDouble(input)).ToString();
-                }
+                input = Regex.Replace(input, "/.", "");
+                input = Regex.Replace(input, chrDec, chrGrp);
             }
 
+            // Check if the input is a formula
+            formula = Regex.Replace(input, pattern, replacement);
+            try
+            {
+                myValue = Convert.ToDouble(new System.Data.DataTable().Compute(formula, null));
+            }
+            catch (System.Data.DataException de)
+            {
+                MessageBox.Show(de.Message);
+                isFormula = false;
+            }
+
+            if (isFormula)
+            {
+                // Check if at least one cell is selected
+                if (_dataGridView.SelectedCells.Count > 0)
+                {
+                    // Show the loading form
+                    var busyForm = new BusyForm();
+                    // Manually set the start position
+                    busyForm.StartPosition = FormStartPosition.Manual;
+                    var parent = this; // Reference to the parent form
+                    busyForm.Left = parent.Left + (parent.Width - busyForm.Width) / 2;
+                    busyForm.Top = parent.Top + (parent.Height - busyForm.Height) / 2;
+                    busyForm.Show(this); // Or busyForm.ShowDialog(this) for a modal form
+                    Application.DoEvents(); // Process events to ensure the loading form is displayed
+
+                    try
+                    {
+                        foreach (DataGridViewCell cell in _dataGridView.SelectedCells)
+                        {
+                            int x = cell.RowIndex;
+                            int y = cell.ColumnIndex;
+
+                            // if a row is selected, skip first two columns
+                            if (y >= 2)
+                            {
+                                replacement = Convert.ToDouble(_dataGridView.Rows[x].Cells[y].Value).ToString("#.###", CultureInfo.CreateSpecificCulture("en-EN"));
+                                formula = Regex.Replace(input, pattern, replacement);
+                                try
+                                {
+                                    myValue = Convert.ToDouble(new System.Data.DataTable().Compute(formula, null));
+                                }
+                                catch (System.Data.DataException)
+                                {
+                                    myValue = Convert.ToDouble(replacement);
+                                }
+
+                                _dataGridView.Rows[x].Cells[y].Value = myValue.ToString();
+                            }
+                        }
+                    }
+                    finally
+                    {
+                        // Close the loading form after the loop
+                        busyForm.Close();
+                    }
+
+                }
+                else
+                {
+                    MessageBox.Show("Something did not match. Please try again.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
 
         }
 
@@ -267,6 +336,7 @@ namespace LoxStatEdit
                 return;
             }
 
+            // Replace comma, if it is the decimal separator
             if (chrDec == ",")
             {
                 input = Regex.Replace(input, "/.", "");
@@ -286,20 +356,68 @@ namespace LoxStatEdit
 
             if (isFormula)
             {
-                for (int x = _dataGridView.SelectedRows[0].Cells[0].RowIndex; x < _dataGridView.Rows.Count; x++)
+                // Check if at least one row is selected
+                if (_dataGridView.SelectedRows.Count == 1 || _dataGridView.SelectedCells.Count == 1)
                 {
-                    replacement = Convert.ToDouble(_dataGridView.Rows[x].Cells[2].Value).ToString("#.###", CultureInfo.CreateSpecificCulture("en-EN"));
-                    formula = Regex.Replace(input, pattern, replacement);
+                    // Show the loading form
+                    var busyForm = new BusyForm();
+                    // Manually set the start position
+                    busyForm.StartPosition = FormStartPosition.Manual;
+                    var parent = this; // Reference to the parent form
+                    busyForm.Left = parent.Left + (parent.Width - busyForm.Width) / 2;
+                    busyForm.Top = parent.Top + (parent.Height - busyForm.Height) / 2;
+                    busyForm.Show(this); // Or busyForm.ShowDialog(this) for a modal form
+                    Application.DoEvents(); // Process events to ensure the loading form is displayed
+
                     try
                     {
-                        myValue = Convert.ToDouble(new System.Data.DataTable().Compute(formula, null));
-                    }
-                    catch (System.Data.DataException re)
-                    {
-                        myValue = Convert.ToDouble(replacement);
-                    }
+                        int y_max;
 
-                    _dataGridView.Rows[x].Cells[2].Value = myValue.ToString();
+                        // Check if all columns need to be recalculated or only one
+                        if (_dataGridView.SelectedRows.Count == 1)
+                        {
+                            y_max = _dataGridView.ColumnCount;
+                        }
+                        else
+                        {
+                            y_max = _dataGridView.SelectedCells[0].ColumnIndex + 1;
+                        }
+
+                        for (int x = _dataGridView.SelectedCells[0].RowIndex; x < _dataGridView.Rows.Count; x++)
+                        {
+
+                            for (int y = _dataGridView.SelectedCells[0].ColumnIndex; y < y_max; y++)
+                            {
+                                //Console.WriteLine($"x: {x}, y: {y}");
+
+                                // if a row is selected, skip first two columns
+                                if (y >= 2)
+                                {
+                                    replacement = Convert.ToDouble(_dataGridView.Rows[x].Cells[y].Value).ToString("#.###", CultureInfo.CreateSpecificCulture("en-EN"));
+                                    formula = Regex.Replace(input, pattern, replacement);
+                                    try
+                                    {
+                                        myValue = Convert.ToDouble(new System.Data.DataTable().Compute(formula, null));
+                                    }
+                                    catch (System.Data.DataException)
+                                    {
+                                        myValue = Convert.ToDouble(replacement);
+                                    }
+
+                                    _dataGridView.Rows[x].Cells[y].Value = myValue.ToString();
+                                }
+                            }
+                        }
+                    }
+                    finally
+                    {
+                        // Close the loading form after the loop
+                        busyForm.Close();
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Something did not match. Please try again.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }
         }
@@ -336,7 +454,7 @@ namespace LoxStatEdit
                     _loxStatFile.DataPoints.Insert(atInsert.Index - 1, newDP);
                 } else
                 {
-                    MessageBox.Show("There is not place to insert an entry!\n\nPlease check again, if there is a missing entry.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("There is no place to insert an entry!\n\nPlease check again, if there is a missing entry.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                
             }
