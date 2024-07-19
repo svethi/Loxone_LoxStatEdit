@@ -1,5 +1,10 @@
 # Changelog
 
+
+## v1.0.5.1
+
+* Changed: Fixed a bug introduced with `v1.0.5.0` that cell formatting (colors/styles) where not shown anymore
+
 ## v1.0.5.0
 
 * Added: Automatically add missing datapoints. This allows you for example to change the first or last date and easily fill up datapoints until that dates

@@ -147,7 +147,7 @@ namespace LoxStatEdit
             aboutLabel.Name = "aboutLabel";
             aboutLabel.Size = new System.Drawing.Size(171, 18);
             aboutLabel.TabIndex = 100;
-            aboutLabel.Text = "LoxStatEdit v1.0.5.0 (2024.07.07)";
+            aboutLabel.Text = "LoxStatEdit v1.0.5.1 (2024.07.19)";
             // 
             // openFolderButton
             // 
@@ -240,6 +240,7 @@ namespace LoxStatEdit
             this._dataGridView.VirtualMode = true;
             this._dataGridView.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridView_CellContentClick);
             this._dataGridView.CellValueNeeded += new System.Windows.Forms.DataGridViewCellValueEventHandler(this.DataGridView_CellValueNeeded);
+            this._dataGridView.CellFormatting += DataGridView_CellFormatting;
             // 
             // _nameCol
             // 
