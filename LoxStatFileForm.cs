@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
@@ -25,6 +25,9 @@ namespace LoxStatEdit
 
             // Subscribe to the MouseClick event of the chart
             _chart.MouseClick += _chartMouseClick;
+
+            // Subscribe to the MouseMove event
+            _dataGridView.MouseMove += DataGridView_MouseMove;
         }
 
         private void LoadFile()
@@ -763,6 +766,32 @@ namespace LoxStatEdit
                     // Optionally, scroll to the selected row if it's not visible
                     _dataGridView.FirstDisplayedScrollingRowIndex = closestPointIndex;
                 }
+            }
+        }
+
+        private void DataGridView_MouseMove(object sender, MouseEventArgs e)
+        {
+            // Perform a hit test to find the column index under the mouse
+            var hitTestInfo = _dataGridView.HitTest(e.X, e.Y);
+            if (hitTestInfo.Type == DataGridViewHitTestType.Cell)
+            {
+                // Check if the column under the mouse is read-only
+                bool isReadOnly = _dataGridView.Columns[hitTestInfo.ColumnIndex].ReadOnly;
+                if (isReadOnly)
+                {
+                    // Change the cursor to indicate the column is read-only
+                    _dataGridView.Cursor = Cursors.No;
+                }
+                else
+                {
+                    // Reset the cursor to the default
+                    _dataGridView.Cursor = Cursors.Default;
+                }
+            }
+            else
+            {
+                // Reset the cursor to the default if not over a cell
+                _dataGridView.Cursor = Cursors.Default;
             }
         }
 
