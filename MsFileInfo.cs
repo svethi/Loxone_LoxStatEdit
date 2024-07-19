@@ -46,14 +46,16 @@ namespace LoxStatEdit
                         int.TryParse(groups[1].Value, out int size);
 
                         DateTime dateTime;
-                        if (DateTime.TryParseExact(groups[2].Value.Replace("  ", " "), "MMM dd HH:mm",
-                            CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime)) ;
-                        else if (DateTime.TryParseExact(groups[2].Value.Replace("  ", " "), "MMM dd yyyy",
-                            CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime)) ;
-                        else if (DateTime.TryParseExact(groups[2].Value.Replace("  ", " "), "MMM d HH:mm",
-                            CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime)) ;
-                        else if (DateTime.TryParseExact(groups[2].Value.Replace("  ", " "), "MMM d yyyy",
-                            CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime)) ;
+                        string dateString = Regex.Replace(groups[2].Value, @"\s+", " ");
+                        string[] formats = { "MMM dd HH:mm", "MMM dd yyyy", "MMM d HH:mm", "MMM d yyyy" };
+
+                        if (!DateTime.TryParseExact(dateString, formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
+                        {
+                            // Handle the case where none of the formats match
+                            MessageBox.Show($"The date \"{dateString}\" could not be matched with one of the following formats:\n{string.Join("\n", formats)}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                            return null;
+                        }
 
                         var fileName = groups[3].Value;
                         

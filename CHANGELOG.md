@@ -3,6 +3,9 @@
 
 ## v1.0.5.1
 
+* Added: Show with cursor change that the `Index` column cannot be changed
+* Changed: Code optimizations
+* Changed: Fixed the problem when inserting the timestamp with `CTRL + V`
 * Changed: Fixed a bug introduced with `v1.0.5.0` that cell formatting (colors/styles) where not shown anymore
 
 ## v1.0.5.0

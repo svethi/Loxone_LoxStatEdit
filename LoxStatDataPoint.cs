@@ -106,7 +106,8 @@ namespace LoxStatEdit
         {
             try
             {
-                return string.Format("{0}[{1}]", LoxStatFile, Index);
+                //return string.Format("{0}[{1}]", LoxStatFile, Index);
+                return string.Format("{0} {1}", "Index", Index);
             }
             catch (Exception ex)
             {
