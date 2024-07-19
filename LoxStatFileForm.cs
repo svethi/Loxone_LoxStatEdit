@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
@@ -704,13 +704,72 @@ namespace LoxStatEdit
                     {
                         string[] cells = line.Split('\t');
                         int ColumnIndex = StartingColumn;
-                        for (int i = 0; i < cells.Length && ColumnIndex <= (_dataGridView.Columns.Count - 1); i++)
+                        for (int i = 0; i < cells.Length && ColumnIndex <= (_dataGridView.Columns.Count - 1); i++, ColumnIndex++)
                         {
                             if (!String.IsNullOrEmpty(cells[i]))
                             {
-                                var columnIndex = ColumnIndex++;
-                                var dataPoint = _loxStatFile.DataPoints[StartingRow];
-                                dataPoint.Values[columnIndex - _valueColumnOffset] = Convert.ToDouble(cells[i].ToString());
+                                if (ColumnIndex == 0) // Specific check for column with index 0
+                                {
+                                    // Do nothing, as the index is not editable
+                                }
+                                else if (ColumnIndex == 1) // Specific check for column with index 1
+                                {
+                                    var input = cells[i].Trim();
+
+                                    // Attempt to parse the cell value as a DateTime
+                                    DateTime valueDateTime;
+                                    string[] formats = { "dd.MM.yyyy HH:mm:ss", "dd.MM.yyyy HH:mm" };
+                                    // bool isDateTime = DateTime.TryParseExact(input, formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out valueDateTime);
+                                    bool isDateTime = DateTime.TryParseExact(input, formats, CultureInfo.CurrentCulture, DateTimeStyles.None, out valueDateTime);
+
+                                    if (isDateTime)
+                                    {
+                                        // If the value is a valid DateTime, assign it
+                                        var dataPoint = _loxStatFile.DataPoints[StartingRow];
+                                        //dataPoint.Values[ColumnIndex - _valueColumnOffset] = valueDateTime;
+                                        //Console.WriteLine($"StartingRow: {StartingRow} - StartingColumn: {StartingColumn} - i: {i} - ColumnIndex: {ColumnIndex}");
+
+                                        dataPoint.Timestamp = valueDateTime;
+                                    }
+                                    else
+                                    {
+                                        // Handle parsing failure, e.g., by showing an error message or skipping the assignment
+                                        MessageBox.Show($"The value '{input}' is not a valid date time. Please use 'dd.MM.yyyy HH:mm:ss'.", "Invalid input", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                        return;
+                                    }
+                                }
+                                else // Existing check for other columns
+                                {
+                                    string chrDec = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
+                                    string chrGrp = CultureInfo.CurrentCulture.NumberFormat.NumberGroupSeparator;
+
+                                    var input = cells[i].Trim();
+
+                                    // Replace comma, if it is the decimal separator
+                                    // Is this really needed? Have to test with different locales
+                                    /*if (chrDec == ",")
+                                    {
+                                        input = Regex.Replace(input, "/.", "");
+                                        input = Regex.Replace(input, chrDec, chrGrp);
+                                    }*/
+
+                                    // Attempt to parse the cell value as a double
+                                    double valueDouble;
+                                    bool isDouble = double.TryParse(input, NumberStyles.Any, CultureInfo.CurrentCulture, out valueDouble);
+
+                                    if (isDouble)
+                                    {
+                                        // If the value is a valid double, assign it
+                                        var dataPoint = _loxStatFile.DataPoints[StartingRow];
+                                        dataPoint.Values[ColumnIndex - _valueColumnOffset] = valueDouble;
+                                    }
+                                    else
+                                    {
+                                        // If the value is not a valid double, show an error message
+                                        MessageBox.Show($"The value '{input}' is not a valid number.", "Invalid input", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                        return;
+                                    }
+                                }
                             }
                         }
                         StartingRow++;
