@@ -163,7 +163,7 @@ namespace LoxStatEdit
                 m.MenuItems.Add(new MenuItem("Calculate downwards", modalCalcFrom_Click));
                 m.MenuItems.Add(new MenuItem("Insert entry above", modalInsertEntry_Click));
                 m.MenuItems.Add(new MenuItem("Delete selected entries", modalDeleteSelected_Click));
-                m.MenuItems.Add(new MenuItem("Fill entries", modalFillEntries_Click));
+                m.MenuItems.Add(new MenuItem("Fill and fix entries", modalFillEntries_Click));
 
                 bool allowCalcSelected = true;
                 bool allowCalcFrom = true;
@@ -530,7 +530,21 @@ namespace LoxStatEdit
         {
             Cursor = Cursors.WaitCursor;
 
-            // Iterate through all but the last row to check gaps with the next row
+            // Sort list by timestamp, remove duplicates
+            _loxStatFile.DataPoints = _loxStatFile.DataPoints
+                .OrderBy(dp => dp.Timestamp)  // Sort by timestamp
+                .GroupBy(dp => dp.Timestamp)  // Group by timestamp
+                .Select(g => g.First())  // Remove duplicated timestamps
+                .Where(dp =>
+                    dp.Index >= 0 &&  // Ensure Index is set
+                    dp.Timestamp != null  // Ensure Timestamp is set
+                )
+                .Select((dp, index) => { dp.Index = index; return dp; })  // Re-index
+                .ToList();
+
+            // Update DataGridView row count, else it might by that there are empty rows shown
+            _dataGridView.RowCount = _loxStatFile.DataPoints.Count;
+
             for (int i = 0; i < _loxStatFile.DataPoints.Count - 1; i++)
             {
                 LoxStatDataPoint currentDP = _loxStatFile.DataPoints[i];
@@ -567,6 +581,8 @@ namespace LoxStatEdit
             }
 
             _dataGridView.Refresh();
+            RefreshProblems();
+            RefreshChart();
             Cursor = Cursors.Default;
         }
 
