@@ -39,7 +39,7 @@ namespace LoxStatEdit
 
                         // string pattern that matches Miniserver Gen 1 and Miniserver Gen 2
                         //string pattern = @"[-rwx]{10}\s+[0-9]+\s+[0-9]+\s+[0-9]+\s+([0-9]+)\s+([A-Za-z]{3}\s+[0-9]{1,2}\s+[0-9:]+)\s+([0-9a-z_\-\.]+)";
-                        string pattern = @"[-rwx]{10}\s+[0-9]+\s+[0-9]+\s+[0-9]+\s+([0-9]+)\s+([A-Za-z]{3})\s+([0-9]{1,2})\s(([0-9]{2}:[0-9]{2})|([12][0-9]{3}))\s+([0-9a-z_\-\.]+)";
+                        string pattern = @"[-rwx]{10}\s+[0-9]+\s+[0-9]+\s+[0-9]+\s+([0-9]+)\s+([A-Za-z]{3})\s+([0-9]{1,2})\s(([0-9]{2}:[0-9]{2})|([12][0-9]{3}))\s+([0-9a-f_\-]{37,}\.[12][0-9]{3}[01][0-9])";
                     var result = Regex.Match(line, pattern);
 
                     if (result.Success)
@@ -70,7 +70,7 @@ namespace LoxStatEdit
 
                             }
 
-                            if (dateTime > DateTime.Now)
+                            if (dateTime >= DateTime.Now)
                             {
                                 //filedate newer than now is not possible ... date from the last year
                                 

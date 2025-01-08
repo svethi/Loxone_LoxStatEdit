@@ -489,6 +489,13 @@ namespace LoxStatEdit
 
         private void MiniserverForm_Load(object sender, EventArgs e)
         {
+
+            // if not remote desktop session then enable double-buffering optimization
+            if (!System.Windows.Forms.SystemInformation.TerminalServerSession)
+            {
+                typeof(DataGridView).InvokeMember("DoubleBuffered", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.SetProperty, null, _dataGridView, new object[] { true });
+            }
+
             _folderTextBox.Text = Path.Combine(Environment.GetFolderPath(
                 Environment.SpecialFolder.MyDocuments), "LoxStatEdit");
             if(_args.Length >= 1)

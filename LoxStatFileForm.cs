@@ -636,7 +636,12 @@ namespace LoxStatEdit
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            if((_args != null) && (_args.Length > 0))
+            // if not remote desktop session then enable double-buffering optimization
+            if (!System.Windows.Forms.SystemInformation.TerminalServerSession)
+            {
+                typeof(DataGridView).InvokeMember("DoubleBuffered", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.SetProperty, null, _dataGridView, new object[] { true });
+            }
+            if ((_args != null) && (_args.Length > 0))
             {
                 _fileNameTextBox.Text = _args[0];
                 LoadFile();
