@@ -57,10 +57,12 @@ namespace LoxStatEdit
                             if (!DateTime.TryParseExact(dateString, formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
                             {
                                 // possibly leap year last year, try las year
+
+                                if (dateString.StartsWith("Feb 29")) {
+                                    dateString = "Mar 01 00:00";
+                                }
                                 
-                                dateString = $"{groups[2].Value} {groups[3].Value} {DateTime.Now.AddYears(-1).Year.ToString()} {groups[4].Value}";
-                                string[] formatswithYear = { "MMM d yyyy HH:mm", "MMM dd yyyy HH:mm" };
-                                if (!DateTime.TryParseExact(dateString, formatswithYear, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
+                                if (!DateTime.TryParseExact(dateString, formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
                                 {
                                     // Handle the case where none of the formats match
                                     MessageBox.Show($"The date \"{dateString}\" could not be matched with one of the following formats:\n{string.Join("\n", formats)}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -74,7 +76,7 @@ namespace LoxStatEdit
                             {
                                 //filedate newer than now is not possible ... date from the last year
                                 
-                                dateTime.AddYears(-1);
+                                dateTime = dateTime.AddYears(-1);
                             }
 
                         var fileName = groups[7].Value;
